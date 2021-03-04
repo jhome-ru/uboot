@@ -887,7 +887,7 @@ int aml_nand_erase_cmd(struct mtd_info *mtd, int page)
 		return 1;
 	/* fixme, skip bootloader */
 	if (page < 1024)
-		return 1;
+		return 0;
 	/* Send commands to erase a block */
 	valid_page_num = (mtd->writesize >> chip->page_shift);
 
@@ -1929,7 +1929,6 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 	offset = mtd->erasesize;
 	offset *= start_blk;
 	for (i=0; i < controller->chip_num; i++) {
-	//if (aml_chip->valid_chip[i]) {
 		for (read_cnt = 0; read_cnt < 3; read_cnt++) {
 			if (read_cnt == 2) {
 				if (aml_chip->mfr_type == NAND_MFR_AMD)
@@ -1938,8 +1937,9 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 					break;
 		    } else {
 				if ((aml_chip->mfr_type == NAND_MFR_SANDISK) ||
-					(aml_chip->mfr_type == 0xc8) ||
-					(aml_chip->mfr_type == 0xc2)) {
+					(aml_chip->mfr_type == NAND_ID_ESMT) ||
+					(aml_chip->mfr_type == NAND_MFR_MACRONIX) ||
+					aml_get_samsung_fbbt_flag()) {
 					addr = offset + read_cnt*mtd->writesize;
 				} else
 					addr = offset +
@@ -2050,27 +2050,6 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 				//printk("col0_oob =%x\n",col0_oob);
 			}
 
-	if ((aml_chip->mfr_type == 0xC8 ) ||
-		(aml_chip->mfr_type == 0xC2)) {
-		if (col0_oob != 0xFF) {
-			printk("detect factory Bad block:%llx blk:%d chip:%d\n",
-				(uint64_t)addr, start_blk, i);
-			bad_blk_cnt++;
-			aml_chip->block_status[start_blk] = NAND_FACTORY_BAD;
-			break;
-		}
-	}
-
-	if (aml_chip->mfr_type  == NAND_MFR_AMD ) {
-		if (col0_oob != 0xFF) {
-			printk("detect factory Bad block:%llx blk:%d chip:%d\n",
-				(uint64_t)addr, start_blk, i);
-			bad_blk_cnt++;
-			aml_chip->block_status[start_blk] = NAND_FACTORY_BAD;
-			break;
-		}
-	}
-
 	if ((col0_oob == 0xFF))
 		continue;
 
@@ -2079,25 +2058,19 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 
 		if (aml_chip->mfr_type  == NAND_MFR_DOSILICON ||
 		    aml_chip->mfr_type  == NAND_MFR_ATO ||
-			aml_chip->mfr_type  == NAND_MFR_HYNIX) {
-			if (col0_oob != 0xFF) {
-				pr_info("detect a fbb:%llx blk=%d chip=%d\n",
-					(uint64_t)addr, start_blk, i);
-				bad_blk_cnt++;
-				aml_chip->block_status[start_blk] =
-					NAND_FACTORY_BAD;
-				break;
-			}
-		}
-
-		if (aml_chip->mfr_type  == 0xef ) {
-			if (col0_oob != 0xFF) {
-				printk("detect factory Bad block:%llx blk=%d chip=%d\n",
-					(uint64_t)addr, start_blk, i);
-				bad_blk_cnt++;
-				aml_chip->block_status[start_blk] = NAND_FACTORY_BAD;
-				break;
-			}
+		    aml_chip->mfr_type  == NAND_MFR_HYNIX ||
+		    aml_chip->mfr_type  == NAND_ID_WINBOND ||
+		    aml_chip->mfr_type == NAND_ID_ESMT ||
+		    aml_chip->mfr_type == NAND_MFR_MACRONIX ||
+		    aml_chip->mfr_type  == NAND_MFR_AMD ||
+		    aml_get_samsung_fbbt_flag()) {
+			printk("col0_data =%x col0_oob =%x\n",col0_data,col0_oob);
+			printk("detect a fbb:%llx blk=%d chip=%d\n",
+				(uint64_t)addr, start_blk, i);
+			bad_blk_cnt++;
+			aml_chip->block_status[start_blk] =
+				NAND_FACTORY_BAD;
+			break;
 		}
 
 		if ((aml_chip->mfr_type  == NAND_MFR_SANDISK) ) {
@@ -2148,7 +2121,6 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 		}
 	}
 		}
-		//}
 	}
 	} while((++start_blk) < total_blk);
 
