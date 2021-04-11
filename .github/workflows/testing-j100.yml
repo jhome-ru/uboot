@@ -36,8 +36,8 @@ jobs:
       - name: Build for j100 v1
         run: |
           cd ${GITHUB_WORKSPACE}
-          make clean
-          make jethome_j100_v1_defconfig
+          make distclean
+          make axg_jethubj100_v1_defconfig
           make
 
       - name: Release file
