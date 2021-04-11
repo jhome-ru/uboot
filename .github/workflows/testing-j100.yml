@@ -18,6 +18,7 @@ on:
 env:
   CROSS_COMPILE: "aarch64-elf-"
   CROSS_COMPILE_T32: "arm-eabi-"
+  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
 jobs:
   # This workflow contains a single job called "build"
@@ -36,22 +37,20 @@ jobs:
       - name: Build for j100 v1
         run: |
           cd ${GITHUB_WORKSPACE}
-          make clean
-          make jethome_j100_v1_defconfig
+          make distclean
+          make axg_jethubj100_v1_defconfig
           make
 
       - name: Release file
-        env:
-          GITHUBTOKEN: ${{ secrets.githubtoken }}
-        uses: djnicholson/release-action@v2.10
+        uses: djnicholson/release-action@v2.11
         with:
           # GitHub auth token
-          token: ${GITHUBTOKEN}
+          token: ${{ secrets.GITHUBTOKEN }}
           # Name of Release to add file to
           release-name: Testing build
           # Name of the tag for the release (will be associated with current branch)
           tag-name: j100-testing 
           # Name for the asset
-          asset-name: J100
+          asset-name: u-boot.bin
           # File to release
           file: u-boot.bin
