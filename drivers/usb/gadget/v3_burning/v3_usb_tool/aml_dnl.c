@@ -1,11 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
 /*
- * g_dnl.c -- USB Downloader Gadget
+ * \file        aml_dnl.c
+ * \brief       from g_dnl.c  USB Downloader Gadget
  *
- * Copyright (C) 2012 Samsung Electronics
- * Lukasz Majewski  <l.majewski@samsung.com>
+ * \version     1.0.0
+ * \date        2019/05/16
+ * \author      Sam.Wu <yihui.wu@amlgic.com>
+ *
+ * Copyright (c) 2019 Amlogic. All Rights Reserved.
+ *
  */
-
 #include <common.h>
 #include <malloc.h>
 
@@ -20,8 +23,8 @@
 
 #include <env_callback.h>
 
-#include "gadget_chips.h"
-#include "composite.c"
+#include "../../gadget_chips.h"
+///#include "composite.c" //not need include twice
 
 /*
  * One needs to define the following:
@@ -30,6 +33,9 @@
  * CONFIG_USB_GADGET_MANUFACTURER
  * at e.g. ./configs/<board>_defconfig
  */
+//#define CONFIG_USB_GADGET_VENDOR_NUM 0x1b8e
+//#define CONFIG_USB_GADGET_PRODUCT_NUM 0xc004
+//#define CONFIG_USB_GADGET_MANUFACTURER  "Amlogic Inc"
 
 #define STRING_MANUFACTURER 25
 #define STRING_PRODUCT 2
@@ -41,17 +47,11 @@
 /* Number of supported configurations */
 #define CONFIGURATION_NUMBER 1
 
-#define DRIVER_VERSION		"usb_dnl 2.0"
+#define DRIVER_VERSION		"aml dnl 1.0"
 
-static const char product[] = "USB download gadget";
+static const char product[] = "DNL";
 static char g_dnl_serial[MAX_STRING_SERIAL];
-static const char manufacturer[] = "Amlogic";
-
-void g_dnl_set_serialnumber(char *s)
-{
-	memset(g_dnl_serial, 0, MAX_STRING_SERIAL);
-	strncpy(g_dnl_serial, s, MAX_STRING_SERIAL - 1);
-}
+static const char manufacturer[] = CONFIG_USB_GADGET_MANUFACTURER;
 
 static struct usb_device_descriptor device_desc = {
 	.bLength = sizeof device_desc,
@@ -61,8 +61,8 @@ static struct usb_device_descriptor device_desc = {
 	.bDeviceClass = USB_CLASS_PER_INTERFACE,
 	.bDeviceSubClass = 0, /*0x02:CDC-modem , 0x00:CDC-serial*/
 
-	.idVendor = 0x18d1,
-	.idProduct = 0x0d02,
+	.idVendor = __constant_cpu_to_le16(CONFIG_USB_GADGET_VENDOR_NUM),
+	.idProduct = __constant_cpu_to_le16(CONFIG_USB_GADGET_PRODUCT_NUM),
 	/* .iProduct = DYNAMIC */
 	/* .iSerialNumber = DYNAMIC */
 	.bNumConfigurations = 1,
@@ -88,6 +88,25 @@ static struct usb_gadget_strings *g_dnl_composite_strings[] = {
 	&g_dnl_string_tab,
 	NULL,
 };
+
+#include <amlogic/cpu_id.h>
+const char * get_usid_string(void)
+{
+    static char chipid_str[32];
+	unsigned char chipid[16];
+	int ret = get_chip_id(chipid, 16);
+	if ( ret ) {
+		printf("_get_chipid %d", ret);
+		return NULL;
+	}
+	char* buff = &chipid_str[0];
+	buff[0] = buff[24] = '\0';
+	int i = 0;
+	for (; i < 12; ++i) {
+		sprintf(buff, "%s%02x", buff, chipid[15-i]);
+	}
+	return buff;
+}
 
 static int g_dnl_unbind(struct usb_composite_dev *cdev)
 {
@@ -146,51 +165,6 @@ static int g_dnl_config_register(struct usb_composite_dev *cdev)
 	return usb_add_config(cdev, config);
 }
 
-__weak
-int board_usb_init(int index, enum usb_init_type init)
-{
-	return 0;
-}
-
-__weak
-int board_usb_cleanup(int index, enum usb_init_type init)
-{
-	return 0;
-}
-
-__weak
-int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
-{
-	return 0;
-}
-
-__weak int g_dnl_get_board_bcd_device_number(int gcnum)
-{
-	return gcnum;
-}
-
-__weak int g_dnl_board_usb_cable_connected(void)
-{
-	return -EOPNOTSUPP;
-}
-
-static bool g_dnl_detach_request;
-
-bool g_dnl_detach(void)
-{
-	return g_dnl_detach_request;
-}
-
-void g_dnl_trigger_detach(void)
-{
-	g_dnl_detach_request = true;
-}
-
-void g_dnl_clear_detach(void)
-{
-	g_dnl_detach_request = false;
-}
-
 static int g_dnl_get_bcd_device_number(struct usb_composite_dev *cdev)
 {
 	struct usb_gadget *gadget = cdev->gadget;
@@ -200,21 +174,9 @@ static int g_dnl_get_bcd_device_number(struct usb_composite_dev *cdev)
 	if (gcnum > 0)
 		gcnum += 0x200;
 
-	return g_dnl_get_board_bcd_device_number(gcnum);
+	/*return g_dnl_get_board_bcd_device_number(gcnum);*/
+    return gcnum;
 }
-
-/**
- * Update internal serial number variable when the "serial#" env var changes.
- *
- * Handle all cases, even when flags == H_PROGRAMMATIC or op == env_op_delete.
- */
-static int on_serialno(const char *name, const char *value, enum env_op op,
-		int flags)
-{
-	g_dnl_set_serialnumber((char *)value);
-	return 0;
-}
-U_BOOT_ENV_CALLBACK(serialno, on_serialno);
 
 static int g_dnl_bind(struct usb_composite_dev *cdev)
 {
@@ -238,16 +200,17 @@ static int g_dnl_bind(struct usb_composite_dev *cdev)
 	g_dnl_string_defs[1].id = id;
 	device_desc.iProduct = id;
 
-	g_dnl_bind_fixup(&device_desc, cdev->driver->name);
+	/*g_dnl_bind_fixup(&device_desc, cdev->driver->name);*/
 
-	if (strlen(g_dnl_serial)) {
-		id = usb_string_id(cdev);
-		if (id < 0)
-			return id;
+    id = usb_string_id(cdev);
+    if (id < 0)
+        return id;
+    g_dnl_string_defs[2].id = id;
+    device_desc.iSerialNumber = id;
 
-		g_dnl_string_defs[2].id = id;
-		device_desc.iSerialNumber = id;
-	}
+    const char* s = get_usid_string();
+    if (s) strncpy(g_dnl_serial, s, strlen(s));
+    else printf("Fail in get chipid\n");
 
 	ret = g_dnl_config_register(cdev);
 	if (ret)
@@ -287,7 +250,7 @@ static struct usb_composite_driver g_dnl_driver = {
  * Registering via USB function name won't be necessary after rewriting
  * g_dnl to support multiple USB functions.
  */
-int g_dnl_register(const char *name)
+int aml_dnl_register(const char *name)
 {
 	int ret;
 
@@ -302,7 +265,7 @@ int g_dnl_register(const char *name)
 	return 0;
 }
 
-void g_dnl_unregister(void)
+void aml_dnl_unregister(void)
 {
 	usb_composite_unregister(&g_dnl_driver);
 }
