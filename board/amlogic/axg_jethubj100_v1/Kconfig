@@ -1,0 +1,15 @@
+if TARGET_AXG_JETHUBJ100_V1
+
+config SYS_SOC
+	default "axg"
+
+config SYS_BOARD
+	default "axg_jethubj100_v1"
+
+config SYS_VENDOR
+	default "amlogic"
+
+config SYS_CONFIG_NAME
+	default "axg_jethubj100_v1"
+
+endif

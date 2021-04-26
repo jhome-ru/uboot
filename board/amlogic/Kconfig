@@ -438,6 +438,13 @@ config TARGET_C2_AF419
 
 endif
 
+if MESON_AXG
+
+config TARGET_AXG_JETHUBJ100_V1
+	bool "AXG_JETHUBJ100_V1"
+
+endif
+
 if MESON_G12A
 
 config SYS_SOC
@@ -471,6 +478,8 @@ source "board/amlogic/a1_ad409/Kconfig"
 source "board/amlogic/a1_ad401/Kconfig"
 
 source "board/amlogic/a1_ad402/Kconfig"
+
+source "board/amlogic/axg_jethubj100_v1/Kconfig"
 
 source "board/amlogic/c1_ae400/Kconfig"
 

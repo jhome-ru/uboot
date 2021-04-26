@@ -218,7 +218,8 @@ obj		:= $(objtree)
 VPATH		:= $(srctree)$(if $(KBUILD_EXTMOD),:$(KBUILD_EXTMOD))
 
 buildsrc	:= $(abspath $(srctree))
-buildtree	:= $(abspath $(CURDIR)/$(KBUILD_OUTPUT))
+buildtree	:= $(abspath $(CURDIR))
+#/$(KBUILD_OUTPUT))
 
 export srctree objtree VPATH buildsrc buildtree KBUILD_OUTPUT
 
