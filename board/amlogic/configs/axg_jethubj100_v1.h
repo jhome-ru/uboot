@@ -339,6 +339,8 @@
 
 /* ddr */
 #define CONFIG_DDR_SIZE					0 //MB //0 means ddr size auto-detect
+#define CONFIG_DDR_CLK					912  //MHz, Range: 200-1200, should be multiple of 24
+#define CONFIG_DDR_CLK_DEBUG				636
 
 /* cpu */
 #define CONFIG_CPU_CLK					1200 //MHz. Range: 360-2000, should be multiple of 24
@@ -532,7 +534,7 @@
 #define CONFIG_CMD_RUN 1
 #define CONFIG_CMD_REBOOT 1
 #define CONFIG_CMD_ECHO 1
-#define CONFIG_CMD_JTAG	1
+// CHANGED!!!! #define CONFIG_CMD_JTAG	1
 #define CONFIG_CMD_AUTOSCRIPT 1
 #define CONFIG_CMD_MISC 1
 #endif

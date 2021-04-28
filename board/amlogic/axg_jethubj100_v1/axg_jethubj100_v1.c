@@ -55,6 +55,7 @@
 #ifdef CONFIG_SYS_I2C_AML_IS31F123XX
 #include <amlogic/aml_is31fl32xx.h>
 #endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 //new static eth setup
@@ -81,6 +82,34 @@ int dram_init(void)
 void secondary_boot_func(void)
 {
 }
+
+int misc_init_r(void)
+{
+#if 0
+        u8 mac_addr[EFUSE_MAC_SIZE];
+        char serial[EFUSE_SN_SIZE];
+        ssize_t len;
+
+        meson_eth_init(PHY_INTERFACE_MODE_RGMII, 0);
+
+        if (!eth_env_get_enetaddr("ethaddr", mac_addr)) {
+                len = meson_sm_read_efuse(EFUSE_MAC_OFFSET,
+                                          mac_addr, EFUSE_MAC_SIZE);
+                if (len == EFUSE_MAC_SIZE && is_valid_ethaddr(mac_addr))
+                        eth_env_set_enetaddr("ethaddr", mac_addr);
+        }
+
+        if (!env_get("serial#")) {
+                len = meson_sm_read_efuse(EFUSE_SN_OFFSET, serial,
+                        EFUSE_SN_SIZE);
+                if (len == EFUSE_SN_SIZE)
+                        env_set("serial#", serial);
+        }
+#endif
+        return 0;
+}
+
+
 void internalPhyConfig(struct phy_device *phydev)
 {
 	/*Enable Analog and DSP register Bank access by*/
@@ -612,6 +641,7 @@ int usb_get_update_result(void)
 }
 #endif
 
+#if 0  // defined in arch/arm/mach-meson/board-axg.c
 phys_size_t get_effective_memsize(void)
 {
 	// >>16 -> MB, <<20 -> real size, so >>16<<20 = <<4
@@ -621,6 +651,7 @@ phys_size_t get_effective_memsize(void)
 	return (((readl(AO_SEC_GP_CFG0)) & 0xFFFF0000) << 4);
 #endif
 }
+#endif
 
 #ifdef CONFIG_MULTI_DTB
 int checkhw(char * name)
@@ -682,3 +713,13 @@ const char * const _env_args_reserve_[] =
 
 		NULL//Keep NULL be last to tell END
 };
+
+
+
+/* new code */
+
+int ft_board_setup(void *blob, bd_t *bd)
+{
+        /* eg: bl31/32 rsv */
+        return 0;
+}

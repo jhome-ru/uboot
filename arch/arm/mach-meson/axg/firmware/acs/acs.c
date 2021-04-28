@@ -49,17 +49,4 @@ acs_set_t __acs_set={
 					.sto_set_version= 1,
 					.sto_set_length	= 0,
 					.sto_set_addr	= 0,
-
-					.bl2_regs_magic	= "bl2r_",
-					.bl2_regs_version = 1,
-					.bl2_regs_length = sizeof(__bl2_reg),
-					.bl2_regs_addr	= (unsigned long)(&__bl2_reg),
-
-					.rsv_magic		= "rsv0_",
-					.rsv_set_version= 1,
-					.rsv_set_length	= 0,
-					.rsv_set_addr	= 0,
-					.board_id		= {0,},
-					.ddr_struct_size = {0,},
-					.ddr_struct_org_size = sizeof(ddr_set_t),
 };
