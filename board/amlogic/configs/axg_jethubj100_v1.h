@@ -42,10 +42,10 @@
 #define CONFIG_VDDEE_SLEEP_VOLTAGE	731		// VDDEE suspend voltage
 #endif
 
-// TODO???? #define CONFIG_PLATFORM_POWER_INIT
-#define CONFIG_VCCK_INIT_VOLTAGE    1100	// VCCK power up voltage
-#define CONFIG_VDDEE_INIT_VOLTAGE   950 	// VDDEE power up voltage
-#define CONFIG_VDDEE_SLEEP_VOLTAGE  810 	// VDDEE suspend voltage
+#define AML_VCCK_INIT_VOLTAGE    1100     // VCCK power up voltage
+#define AML_VDDEE_INIT_VOLTAGE   950     // VDDEE power up voltage
+#define AML_VDDEE_SLEEP_VOLTAGE  810     // VDDEE suspend voltage
+
 
 /* SMP Definitinos */
 #define CPU_RELEASE_ADDR		secondary_boot_func
@@ -493,7 +493,7 @@
 
 /* net */
 #define CONFIG_CMD_NET   1
-#define CONFIG_ETH_DESIGNWARE
+//#define CONFIG_ETH_DESIGNWARE
 #if defined(CONFIG_CMD_NET)
 	#define CONFIG_DESIGNWARE_ETH 1
 	#define CONFIG_PHYLIB	1
