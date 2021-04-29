@@ -116,9 +116,13 @@ void set_wakeup_method(unsigned int method)
 
 void process_high_task(unsigned command)
 {
-	return;
-	/*unsigned *pcommand =
-	    (unsigned *)(&(high_task_share_mem[TASK_COMMAND_OFFSET]));*/
+	unsigned *pcommand =
+	    (unsigned *)(&(high_task_share_mem[TASK_COMMAND_OFFSET]));
+/*	unsigned *response =
+	    (unsigned *)(&(high_task_share_mem[TASK_RESPONSE_OFFSET]));
+*/
+	if (command == HIGH_TASK_SET_DVFS)
+		set_dvfs(*(pcommand + 1), *(pcommand + 2));
 }
 
 void high_task(void)
@@ -150,10 +154,15 @@ void process_low_task(unsigned command)
 {
 	unsigned *pcommand =
 	    (unsigned *)(&(low_task_share_mem[TASK_COMMAND_OFFSET]));
-	/*unsigned *response =
-	    (unsigned *)(&(low_task_share_mem[TASK_RESPONSE_OFFSET]));*/
+	unsigned *response =
+	    (unsigned *)(&(low_task_share_mem[TASK_RESPONSE_OFFSET]));
+	unsigned para1;
 
-	if ((command & 0xffff) == LOW_TASK_USR_DATA) {/*0-15bit: comd; 16-31bit: client_id*/
+	if (command == LOW_TASK_GET_DVFS_INFO) {
+		para1 = *(pcommand + 1);
+		get_dvfs_info(para1,
+			(unsigned char *)(response+2), (response+1));
+	} else if ((command & 0xffff) == LOW_TASK_USR_DATA) {/*0-15bit: comd; 16-31bit: client_id*/
 		if ((command >> 16) == SCPI_CL_REMOTE) {
 			usr_pwr_key = *(pcommand + 2);/*tx_size locates at *(pcommand + 1)*/
 			dbg_print("pwr_key=",usr_pwr_key);

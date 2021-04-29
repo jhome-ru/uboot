@@ -36,8 +36,8 @@ CFLAGS_INCLUDE=-I$(buildsrc)/build/include/ \
                -I./include \
                -I./build
 
-VPATH_LIST=     $(buildsrc)/board/$(BOARDDIR)
-#VPATH_LIST=     $(buildsrc)/$(BOARDDIR)
+#VPATH_LIST=     $(buildsrc)/board/$(BOARDDIR)
+VPATH_LIST=     $(buildsrc)/$(BOARDDIR)
 
 VPATH_LIST:=$(VPATH_LIST:%=%/firmware/scp_task/)
 
@@ -62,6 +62,7 @@ OBJS += user_task.o
 OBJS += misc.o
 OBJS += uart.o
 OBJS += suspend.o
+OBJS += dvfs.o
 OBJS += lib/string.o
 OBJS += lib/delay.o
 

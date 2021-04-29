@@ -1,9 +1,3 @@
-SOURCES		+=	acs_entry.S
-
-ifdef CONFIG_MDUMP_COMPRESS
-SOURCES		+=	ramdump.c
-endif
-
-SOURCES		+=	acs.c
-
+SOURCES		+=	acs.c						\
+				acs_entry.S
 LINKERFILE_T		:=	acs.ld.S

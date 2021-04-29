@@ -27,21 +27,13 @@
 #ifndef CONFIG_IR_REMOTE_USE_PROTOCOL
 #define CONFIG_IR_REMOTE_USE_PROTOCOL 0
 #endif
-#define CONFIG_END 0xffffffff
-#define IR_POWER_KEY_MASK 0xffffffff
-
+#if 1
 typedef struct reg_remote {
 	int reg;
 	unsigned int val;
 } reg_remote;
-
-typedef struct remote_pwrkeys {
-	unsigned short size;
-	unsigned int *pwrkeys;
-}remote_pwrkeys_t;
-
-remote_pwrkeys_t pwr_keys_list;
-unsigned int usr_pwr_key = 0xffffffff;
+#define CONFIG_END 0xffffffff
+#define IR_POWER_KEY_MASK 0xffffffff
 
 //24M
 static const reg_remote RDECODEMODE_NEC[] = {
@@ -59,17 +51,16 @@ static const reg_remote RDECODEMODE_NEC[] = {
 };
 
 static const reg_remote RDECODEMODE_DUOKAN[] = {
-	{AO_MF_IR_DEC_LDR_ACTIVE, 70 << 16 | 30 << 0},
-	{AO_MF_IR_DEC_LDR_IDLE, 50 << 16 | 15 << 0},
+	{AO_MF_IR_DEC_LDR_ACTIVE, 53 << 16 | 50 << 0},
+	{AO_MF_IR_DEC_LDR_IDLE, 31 << 16 | 25 << 0},
 	{AO_MF_IR_DEC_LDR_REPEAT, 30 << 16 | 26 << 0},
-	{AO_MF_IR_DEC_BIT_0, 66 << 16 | 40 << 0},
-	{AO_MF_IR_DEC_REG0, 3 << 28 | (0x4e2 << 12) | 0x13}, //body frame 30ms
-	{AO_MF_IR_DEC_STATUS, (80 << 20) | 66 << 10},
+	{AO_MF_IR_DEC_BIT_0, 61 << 16 | 55 << 0},
+	{AO_MF_IR_DEC_REG0, 3 << 28 | (0x5DC << 12) | 0x13},	//body frame 30ms
+	{AO_MF_IR_DEC_STATUS, (76 << 20) | 69 << 10},
 	{AO_MF_IR_DEC_REG1, 0x9300},
-	{AO_MF_IR_DEC_REG2, 0xb90b},
-	{AO_MF_IR_DEC_DURATN2, 97 << 16 | 80 << 0},
-	{AO_MF_IR_DEC_DURATN3, 120 << 16 | 97 << 0},
-	{AO_MF_IR_DEC_REG3, 5000 << 0},
+	{AO_MF_IR_DEC_REG2, 0x10b},
+	{AO_MF_IR_DEC_DURATN2, 91 << 16 | 79 << 0},
+	{AO_MF_IR_DEC_DURATN3, 111 << 16 | 99 << 0},
 	{CONFIG_END, 0}
 };
 
@@ -222,34 +213,12 @@ unsigned bakeuAO_IR_DEC_LDR_REPEAT;
 **
 ********************************************************************/
 #if 1
-void backuremote_register(void)
-{
-	backuAO_RTI_PIN_MUX_REG = readl(AO_RTI_PIN_MUX_REG);
-	backuAO_IR_DEC_REG0 = readl(AO_MF_IR_DEC_REG0);
-	backuAO_IR_DEC_REG1 = readl(AO_MF_IR_DEC_REG1);
-	backuAO_IR_DEC_LDR_ACTIVE = readl(AO_MF_IR_DEC_LDR_ACTIVE);
-	backuAO_IR_DEC_LDR_IDLE = readl(AO_MF_IR_DEC_LDR_IDLE);
-	backuAO_IR_DEC_BIT_0 = readl(AO_MF_IR_DEC_BIT_0);
-	bakeuAO_IR_DEC_LDR_REPEAT = readl(AO_MF_IR_DEC_LDR_REPEAT);
-}
-
-void resume_remote_register(void)
-{
-	writel(backuAO_RTI_PIN_MUX_REG, AO_RTI_PIN_MUX_REG);
-	writel(backuAO_IR_DEC_REG0, AO_MF_IR_DEC_REG0);
-	writel(backuAO_IR_DEC_REG1, AO_MF_IR_DEC_REG1);
-	writel(backuAO_IR_DEC_LDR_ACTIVE, AO_MF_IR_DEC_LDR_ACTIVE);
-	writel(backuAO_IR_DEC_LDR_IDLE, AO_MF_IR_DEC_LDR_IDLE);
-	writel(backuAO_IR_DEC_BIT_0, AO_MF_IR_DEC_BIT_0);
-	writel(bakeuAO_IR_DEC_LDR_REPEAT, AO_MF_IR_DEC_LDR_REPEAT);
-	readl(AO_MF_IR_DEC_FRAME);
-}
 
 static int ir_remote_init_32k_mode(void)
 {
 	//volatile unsigned int status,data_value;
-	int val = readl(AO_RTI_PIN_MUX_REG);
-	writel((val | (1 << 0)), AO_RTI_PIN_MUX_REG);
+	int val = readl(AO_RTI_PINMUX_REG0);
+	writel((val | (1 << 24)), AO_RTI_PINMUX_REG0);
 	set_remote_mode(CONFIG_IR_REMOTE_USE_PROTOCOL);
 	//status = readl(AO_MF_IR_DEC_STATUS);
 	readl(AO_MF_IR_DEC_STATUS);
@@ -270,88 +239,59 @@ void init_custom_trigger(void)
 #endif
 
 static unsigned int kk[] = {
-	AML_IR_REMOTE_POWER_UP_KEY_VAL1,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL2,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL3,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL4,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL5,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL6,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL7,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL8,
-	AML_IR_REMOTE_POWER_UP_KEY_VAL9,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL1,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL2,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL3,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL4,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL5,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL6,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL7,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL8,
+	CONFIG_IR_REMOTE_POWER_UP_KEY_VAL9,
 };
 
 static int init_remote(void)
 {
-	return 0;
 	uart_put_hex(readl(AO_IR_DEC_STATUS), 32);
 	uart_put_hex(readl(AO_IR_DEC_FRAME), 32);
 	init_custom_trigger();
-	//return 0;
-}
-
-/*can be called in pwr_ctrl.c*/
-int remote_init_pwrkeys(int size, int *keys)
-{
-	pwr_keys_list.size = size;
-	pwr_keys_list.pwrkeys = keys;
-
 	return 0;
 }
-
-remote_pwrkeys_t *remote_get_pwrkeys(void)
-{
-	return &pwr_keys_list;
-}
-
+#endif
+unsigned int usr_pwr_key = 0xffffffff;
 static int remote_detect_key(void)
 {
-	remote_pwrkeys_t *keysdat = remote_get_pwrkeys();
 	unsigned power_key;
 	int j;
 
-	if (!keysdat->size) {
-		uart_puts("customer pwrkeys for IR is NULL, use defaults!\n");
-		remote_init_pwrkeys(sizeof(kk)/sizeof(kk[0]), kk);
-	}
-
 	if (((readl(AO_MF_IR_DEC_STATUS)) >> 3) & 0x1) { /*to judge the frame whether is effective or not*/
-		if (readl(AO_MF_IR_DEC_STATUS) & 0x1) { /*to judge the frame whether is repeat frame or not*/
-			readl(AO_MF_IR_DEC_FRAME);
-			return 0;
-		}
-		power_key = readl(AO_MF_IR_DEC_FRAME);
+			if (readl(AO_MF_IR_DEC_STATUS) & 0x1) {		  /*to judge the frame whether is repeat frame or not*/
+				readl(AO_MF_IR_DEC_FRAME);
+				return 0;
+			}
+			power_key = readl(AO_MF_IR_DEC_FRAME);
 
-		uart_puts("customer pwrkeys for IR is 0x");
-		uart_put_hex(power_key, 32);
-		uart_puts("\n");
-
-		for (j = 0; j < keysdat->size; j++) {
-			if ((power_key & IR_POWER_KEY_MASK) == keysdat->pwrkeys[j])
-				return 1;
-		}
-		if ((power_key & IR_POWER_KEY_MASK) == usr_pwr_key)
-			return 2;
+			for (j = 0; j < CONFIG_IR_REMOTE_POWER_UP_KEY_CNT; j++) {
+					if ((power_key & IR_POWER_KEY_MASK) == kk[j])
+							return 1;
+			}
+			if ((power_key & IR_POWER_KEY_MASK) == usr_pwr_key)
+					return 2;
 	}
 
 #ifdef CONFIG_COMPAT_IR
 	if (((readl(AO_IR_DEC_STATUS)) >> 3) & 0x1) { /*to judge the frame whether is effective or not*/
-		if (readl(AO_IR_DEC_STATUS) & 0x1) { /*to judge the frame whether is repeat frame or not*/
-			readl(AO_IR_DEC_FRAME);
-			return 0;
-		}
-		power_key = readl(AO_IR_DEC_FRAME);
-
-		uart_puts("customer pwrkeys for IR is 0x");
-		uart_put_hex(power_key, 32);
-		uart_puts("\n");
-
-		for (j = 0; j < keysdat->size; j++) {
-			if ((power_key & IR_POWER_KEY_MASK) == keysdat->pwrkeys[j])
-				return 1;
-		}
-		if ((power_key & IR_POWER_KEY_MASK) == usr_pwr_key)
-			return 2;
+			if (readl(AO_IR_DEC_STATUS) & 0x1) { 	  /*to judge the frame whether is repeat frame or not*/
+				readl(AO_IR_DEC_FRAME);
+				return 0;
+			}
+			power_key = readl(AO_IR_DEC_FRAME);
+			for (j = 0; j < CONFIG_IR_REMOTE_POWER_UP_KEY_CNT; j++) {
+					if ((power_key & IR_POWER_KEY_MASK) == kk[j])
+							return 1;
+			}
+			if ((power_key & IR_POWER_KEY_MASK) == usr_pwr_key)
+					return 2;
 	}
 #endif
 

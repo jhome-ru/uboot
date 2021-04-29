@@ -642,7 +642,39 @@
 /* using mbr*/
 #define CONFIG_PTBL_MBR (1)
 
+// from v2015
+#define CONFIG_DDR_TYPE                                       CONFIG_DDR_TYPE_AUTO
+#define CONFIG_DDR_CHANNEL_SET                  CONFIG_DDR0_16BIT
+#define CONFIG_DDR4_CLK                                 912  //MHz, this is for same board with DDR4 chip
+#define CONFIG_DDR_FULL_TEST                    0 //0:disable, 1:enable. ddr full test
 
+/* Enable ir remote wake up for bl30 */                                                                                                                                                    
+#if 1                                                                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL1 0xef10fe01 //amlogic tv ir --- power                                                                                                            
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL2 0XBB44FB04 //amlogic tv ir --- ch+                                                                                                              
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL3 0xF20DFE01 //amlogic tv ir --- ch-                                                                                                              
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL4 0XBA45BD02 //amlogic small ir--- power                                                                                                          
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL5 0xe51afb04                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL6 0xFFFFFFFF                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL7 0xFFFFFFFF                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL8 0xFFFFFFFF                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_VAL9 0xFFFFFFFF                                                                                                                                      
+#define CONFIG_IR_REMOTE_POWER_UP_KEY_CNT 9                                                                                                                                                                                           
+#endif                                                                                                                                                                                     
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL1 0xef10fe01 //amlogic tv ir --- power                                                                                                               
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL2 0XBB44FB04 //amlogic tv ir --- ch+                                                                                                                 
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL3 0xF20DFE01 //amlogic tv ir --- ch-                                                                                                                 
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL4 0XBA45BD02 //amlogic small ir--- power                                                                                                             
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL5 0xe51afb04                                                                                                                                         
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL6 0xFFFFFFFF                                                                                                                                         
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL7 0xFFFFFFFF                                                                                                                                         
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL8 0xFFFFFFFF                                                                                                                                         
+#define AML_IR_REMOTE_POWER_UP_KEY_VAL9 0xFFFFFFFF                                                                                                                                         
+/*config the default parameters for adc power key*/                                                                                                                                        
+#if 1                                                                                                                                                                                      
+#define CONFIG_ADC_POWER_KEY_CHAN   0 /*channel range: 0-7*/                                                                                                                              
+#define CONFIG_ADC_POWER_KEY_VAL    0  /*sample value range: 0-1023*/                                                                                                                      
+#endif                                                                                                                                                                                     
 
 #endif
 

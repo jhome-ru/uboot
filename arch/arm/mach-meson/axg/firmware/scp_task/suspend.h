@@ -37,7 +37,7 @@ typedef unsigned int uint32_t;
 #define	REMOTE_CUS_WAKEUP		9
 #define ETH_PHY_WAKEUP      10
 #define CECB_WAKEUP		11
-#define ETH_PHY_GPIO    12
+#define ETH_GPIOY_14		12
 /* wake up source*/
 #define UDEFINED_WAKEUP_SRC	(1<<0)
 #define CHARGING_WAKEUP_SRC (1<<1)
@@ -51,11 +51,12 @@ typedef unsigned int uint32_t;
 #define ETH_PHY_WAKEUP_SRC (1<<9)
 #define CECB_WAKEUP_SRC    (1<<10)
 #define ETH_PHY_GPIO_SRC   (1<<12)
-
 struct pwr_op {
 	void (*power_off_at_24M)(unsigned int);
 	void (*power_on_at_24M)(unsigned int);
+
 	void (*shut_down)(void);
+
 	unsigned int (*detect_key)(unsigned int);
 	void (*get_wakeup_source)(void *, unsigned int);
 };
@@ -68,14 +69,21 @@ static void inline aml_update_bits(unsigned int  reg, unsigned int mask, unsigne
 	writel(tmp, reg);
 }
 
+#define IRQ_TIMERA_NUM      1
+#define IRQ_GPIO0_NUM       8
+#define IRQ_GPIO1_NUM       9
+#define IRQ_AO_IR_DEC_NUM   42
+#define IRQ_AO_CEC_NUM      45
+#define IRQ_AO_GPIO0_NUM    46
+#define IRQ_ETH_PHY_NUM     23
+#define IRQ_AO_CECB_NUM     51
+
 #define IRQ_VRTC_NUM		127
 /* GPIO trigger type*/
 #define GPIO_IRQ_LOW_LEVEL		0
 #define GPIO_IRQ_HIGH_LEVEL		1
 #define GPIO_IRQ_FALLING_EDGE	2
 #define GPIO_IRQ_RISING_EDGE		3
-/*for sm1,tm2 or later */
-#define GPIO_IRQ_BOTH_EDGE		4
 
 enum {
 	IRQ_TIMERA = 0,

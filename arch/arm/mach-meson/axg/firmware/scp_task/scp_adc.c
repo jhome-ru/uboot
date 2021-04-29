@@ -3,8 +3,7 @@
 #define MESON_CPU_MAJOR_ID_GXL		0x21
 #define MESON_CPU_MAJOR_ID_GXM		0x22
 #define MESON_CPU_MAJOR_ID_TXL		0x23
-#define MESON_CPU_MAJOR_ID_TXLX		0x24
-#define MESON_CPU_MAJOR_ID_G12A		0x28
+#define MESON_CPU_MAJOR_ID_TXLX	0x24
 
 static int adc_type; /*1:12bit; 0:10bit*/
 
@@ -69,10 +68,7 @@ static inline void saradc_power_control(int on)
 {
 	if (on) {
 		aml_set_reg32_bits(P_AO_SAR_ADC_REG11, 1, 13, 1);
-		if (get_cpu_family_id() >= MESON_CPU_MAJOR_ID_G12A)
-			aml_set_reg32_bits(P_AO_SAR_ADC_REG11, 0, 5, 2);
-		else
-			aml_set_reg32_bits(P_AO_SAR_ADC_REG11, 3, 5, 2);
+		aml_set_reg32_bits(P_AO_SAR_ADC_REG11, 3, 5, 2);
 		aml_set_reg32_bits(P_AO_SAR_ADC_REG3, 1, 21, 1);
 
 		_udelay(5);
@@ -162,9 +158,6 @@ int get_adc_sample_gxbb(int ch)
 			value >>= 2;
 			sum += value;
 			count++;
-		} else {
-			uart_puts("channel error");
-			uart_puts("\n");
 		}
 	}
 	if (!count) {
@@ -193,14 +186,14 @@ int check_adc_key_resume(void)
 	int max;
 
 	/*the sampling value of adc: 0-1023*/
-	min = AML_ADC_POWER_KEY_VAL - 40;
+	min = CONFIG_ADC_POWER_KEY_VAL - 40;
 	if (min < 0)
 		min = 0;
-	max = AML_ADC_POWER_KEY_VAL + 40;
+	max = CONFIG_ADC_POWER_KEY_VAL + 40;
 	if (max > 1023)
 		max = 1023;
 
-	value = get_adc_sample_gxbb(AML_ADC_POWER_KEY_CHAN);
+	value = get_adc_sample_gxbb(CONFIG_ADC_POWER_KEY_CHAN);
 	if ((value >= min) && (value <= max))
 		return 1;
 	else

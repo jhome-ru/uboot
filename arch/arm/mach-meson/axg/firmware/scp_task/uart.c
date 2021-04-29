@@ -23,10 +23,7 @@
 #include <stdint.h>
 #include "task_apis.h"
 
-/* #define P_AO_UART_WFIFO                 (0xc81004c0) */
-/* #define P_AO_RTI_PIN_MUX_REG          (0xc8100014) */
-
-#define UART_PORT_CONS AO_UART_WFIFO
+#define UART_PORT_CONS (0xff803000 + (0x000 << 2))
 
 #define UART_STP_BIT UART_MODE_MASK_STP_1BIT
 #define UART_PRTY_BIT 0
@@ -49,17 +46,17 @@
 #define UART_MODE_MASK_RST_TX                   (1<<22)
 #define UART_MODE_MASK_RST_RX                   (1<<23)
 #define UART_MODE_MASK_CLR_ERR                  (1<<24)
+#define UART_STAT_MASK_TFIFO_FULL               (1<<21)
+#define UART_STAT_MASK_TFIFO_EMPTY              (1<<22)
 #define UART_CTRL_USE_XTAL_CLK			(1<<24)
 #define UART_CTRL_USE_NEW_BAUD_RATE		(1<<23)
-
-#define UART_STAT_MASK_TFIFO_FULL			(1<<21)
-#define UART_STAT_MASK_TFIFO_EMPTY			(1<<22)
 
 #define P_UART(uart_base, reg)		(uart_base+reg)
 #define P_UART_WFIFO(uart_base)		P_UART(uart_base, UART_WFIFO)
 #define P_UART_MODE(uart_base)		P_UART(uart_base, UART_MODE)
 #define P_UART_CTRL(uart_base)		P_UART(uart_base, UART_CTRL)
 #define P_UART_STATUS(uart_base)	P_UART(uart_base, UART_STATUS)
+
 
 static int uart_tx_isfull(void)
 {
