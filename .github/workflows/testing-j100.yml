@@ -6,7 +6,8 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the v2021.04-jethome branch
   push:
-    branches: [ *jethome* ]
+    branches: 
+      - '**jethome**'
   #pull_request:
   #  branches: [ *jethome* ]
 
