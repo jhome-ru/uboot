@@ -38,6 +38,8 @@ jobs:
       - name: Build for j100 v1
         run: |
           cd ${GITHUB_WORKSPACE}
+          export CROSS_COMPILE="aarch64-elf-"
+          export CROSS_COMPILE_T32="arm-eabi-"
           make distclean
           make axg_jethubj100_v1_defconfig
           make
@@ -61,6 +63,8 @@ jobs:
       - name: Build for j80 v1
         run: |
           cd ${GITHUB_WORKSPACE}
+          export CROSS_COMPILE="aarch64-elf-"
+          export CROSS_COMPILE_T32="arm-eabi-"
           make distclean
           make gxl_jethubj80_v1_defconfig
           make
