@@ -1,0 +1,8 @@
+JetHome JetHub J100
+M:	Vyacheslav Bocharov <adeep@lexina.in>
+S:	Maintained
+L:	u-boot-amlogic@groups.io
+F:	board/amlogic/axg_jethubj100_v1/
+F:	include/configs/axg_jethubj100_v1.h
+F:	configs/jethome_j100_defconfig
+F:	doc/board/amlogic/s400.rst
