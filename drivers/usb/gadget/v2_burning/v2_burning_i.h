@@ -15,7 +15,7 @@
 
 #include <config.h>
 #include <common.h>
-#include <environment.h>
+#include <env_internal.h>
 #include <asm/string.h>
 #include <linux/errno.h>
 #include <asm/byteorder.h>
