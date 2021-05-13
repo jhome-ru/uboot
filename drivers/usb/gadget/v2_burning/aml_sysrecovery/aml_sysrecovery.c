@@ -170,7 +170,7 @@ _finish:
         return ret;
 }
 
-static int do_aml_sysrecovery(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_aml_sysrecovery(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     unsigned needVerify         = (1 < argc) ? simple_strtoul(argv[1], NULL, 0) : 0;

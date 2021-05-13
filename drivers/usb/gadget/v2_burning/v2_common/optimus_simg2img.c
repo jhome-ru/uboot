@@ -393,7 +393,7 @@ int optimus_sparse_get_chunk_data(u8** head, u32* headSz, u32* dataSz, u64* data
 
 
 #if 0
-int do_timestamp(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+int do_timestamp(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 /*const char* optimus_time_stamp(void)*/
 {
     const char* _formatStr = "[%5d.%03d]";

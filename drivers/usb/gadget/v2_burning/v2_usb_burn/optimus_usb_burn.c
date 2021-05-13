@@ -48,7 +48,7 @@ int optimus_burn_package_in_usb(const char* sdc_cfg_file)
 
 
 // added by scy
-int do_usb_burn(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+int do_usb_burn(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
 
     int rcode = 0;

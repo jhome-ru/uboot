@@ -48,7 +48,7 @@ static struct optKeyInfo_s{
 /*
  * <aml_key_burn probe> device_format interface
  */
-static int do_opt_keysburn_probe(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_opt_keysburn_probe(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
         const char* device_format = argv[2];//vfat
@@ -114,7 +114,7 @@ static int do_opt_keysburn_probe(cmd_tbl_t *cmdtp, int flag, int argc, char * co
         return rc;
 }
 
-static int do_opt_keysburn_init(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_opt_keysburn_init(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
 
@@ -132,7 +132,7 @@ static int do_opt_keysburn_init(cmd_tbl_t *cmdtp, int flag, int argc, char * con
         return rc;
 }
 
-static int do_opt_keysburn_uninit(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_opt_keysburn_uninit(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
 
@@ -144,7 +144,7 @@ static int do_opt_keysburn_uninit(cmd_tbl_t *cmdtp, int flag, int argc, char * c
         return rc;
 }
 
-static int do_opt_keysburn_misc(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_opt_keysburn_misc(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
 
@@ -214,7 +214,7 @@ int optimus_keysburn_onekey(const char* keyName, u8* keyVal, unsigned keyValLen)
         return rc;
 }
 
-static int do_opt_keysburn_burn(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_opt_keysburn_burn(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
         const char* keyName = argv[2];
@@ -246,7 +246,7 @@ static int do_opt_keysburn_burn(cmd_tbl_t *cmdtp, int flag, int argc, char * con
 }
 
 
-static cmd_tbl_t cmd_opt_key_burn[] = {
+static struct cmd_tbl_s cmd_opt_key_burn[] = {
 	U_BOOT_CMD_MKENT(probe,       4, 0, do_opt_keysburn_probe, "", ""),
 	U_BOOT_CMD_MKENT(init,        3, 0, do_opt_keysburn_init, "", ""),
 	U_BOOT_CMD_MKENT(uninit,      2, 0, do_opt_keysburn_uninit, "", ""),
@@ -254,10 +254,10 @@ static cmd_tbl_t cmd_opt_key_burn[] = {
 	U_BOOT_CMD_MKENT(misc,        6, 0, do_opt_keysburn_misc, "", ""),
 };
 
-static int do_aml_key_burn(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_aml_key_burn(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
         int rc = 0;
-	cmd_tbl_t *c;
+	struct cmd_tbl_s *c;
 
         sprintf(_errInfo, "success");
 	c = find_cmd_tbl(argv[1], cmd_opt_key_burn, ARRAY_SIZE(cmd_opt_key_burn));

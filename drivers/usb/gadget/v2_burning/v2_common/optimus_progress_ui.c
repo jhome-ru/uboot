@@ -546,7 +546,7 @@ int optimus_progress_ui_printf(const char* fmt, ...)
 
 #define PROGRESS_BAR_TEST 0
 #if PROGRESS_BAR_TEST
-static int do_progress_bar_test(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_progress_bar_test(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
     //bmp display $upgrade_bar_offset x,y,width
     static __hdle hProgressBar = NULL;

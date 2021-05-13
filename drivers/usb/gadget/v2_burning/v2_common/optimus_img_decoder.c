@@ -568,7 +568,7 @@ static int test_pack(const char* interface, const char* device, const char* part
     return 0;
 }
 
-static int do_unpack(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_unpack(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     const char* imgPath = "a";

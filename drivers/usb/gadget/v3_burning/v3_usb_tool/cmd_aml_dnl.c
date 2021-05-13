@@ -44,7 +44,7 @@ static void usb_parameter_init(int time_out)
 	return;
 }
 
-static int do_aml_DNL(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
+static int do_aml_DNL(struct cmd_tbl_s *cmdtp, int flag, int argc, char *const argv[])
 {
 	int ret;
 	unsigned timeout = (2 <= argc) ? simple_strtoul(argv[1], NULL, 0) : 0;

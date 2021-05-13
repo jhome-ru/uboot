@@ -77,7 +77,7 @@ static int assert_key_is_pressed_in_a_period(unsigned nMillSeconds, const char* 
 }
 
 //test If the recovery_key pressed time >= @nMillSeconds
-int do_sys_rec_key(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+int do_sys_rec_key(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     unsigned nMillSeconds = 0;

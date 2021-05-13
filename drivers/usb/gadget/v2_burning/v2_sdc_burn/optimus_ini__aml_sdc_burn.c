@@ -437,7 +437,7 @@ int parse_ini_cfg_file(const char* filePath)
 
 #define MYDBG 0
 #if MYDBG
-int do_ini_parser(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+int do_ini_parser(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     const char* filePath = "dos_dc_burn.ini";
