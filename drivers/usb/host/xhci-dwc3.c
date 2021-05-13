@@ -142,7 +142,7 @@ void xhci_dwc3_phy_tuning_1(struct udevice *dev, int port)
     struct xhci_dwc3_platdata *plat;
     struct udevice *udev = dev;
 
-	plat = dev_get_platdata(udev);
+	plat = dev_get_plat(udev);
 
     for (i = 0; i < plat->num_phys; i++) {
 		ret = generic_phy_tuning(&plat->usb_phys[i], port);
@@ -157,7 +157,7 @@ void xhci_dwc3_phy_tuning_1(struct udevice *dev, int port)
 
 static int xhci_dwc3_setup_phy(struct udevice *dev)
 {
-	struct xhci_dwc3_platdata *plat = dev_get_platdata(dev);
+	struct xhci_dwc3_platdata *plat = dev_get_plat(dev);
 	int i, ret, count;
 
 	/* Return if no phy declared */
@@ -237,7 +237,7 @@ phys_init_err:
 
 static int xhci_dwc3_shutdown_phy(struct udevice *dev)
 {
-	struct xhci_dwc3_platdata *plat = dev_get_platdata(dev);
+	struct xhci_dwc3_platdata *plat = dev_get_plat(dev);
 	int i, ret;
 
 	for (i = 0; i < plat->num_phys; i++) {
