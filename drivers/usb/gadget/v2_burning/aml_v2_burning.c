@@ -90,7 +90,7 @@ int aml_burn_check_uboot_loaded_for_burn(int flag)
 
 //1, is booted from external sdmmc: check if aml_sdc_burn.ini existed
 //2, if loaded from usb, ready for burn
-int aml_burn_check_is_ready_for_burn(int flag, bd_t* bis)
+int aml_burn_check_is_ready_for_burn(int flag, struct bd_info* bis)
 {
         if (is_tpl_loaded_from_usb()) {
                 return 1;
@@ -104,7 +104,7 @@ int aml_burn_check_is_ready_for_burn(int flag, bd_t* bis)
         return 0;
 }
 
-int aml_burn_sdc_producing(int flag, bd_t* bis)
+int aml_burn_sdc_producing(int flag, struct bd_info* bis)
 {
     optimus_work_mode_set(OPTIMUS_WORK_MODE_SDC_PRODUCE);
 
@@ -113,7 +113,7 @@ int aml_burn_sdc_producing(int flag, bd_t* bis)
 
 #ifdef CONFIG_USB_BURNING_TOOL
 //producing mode means boot from raw flash, i.e, uboot is loaded from usb
-static int aml_burn_usb_producing(int flag, bd_t* bis)
+static int aml_burn_usb_producing(int flag, struct bd_info* bis)
 {
     flag = flag; bis = bis;//avoid compile warning
 
@@ -128,7 +128,7 @@ static int aml_burn_usb_producing(int flag, bd_t* bis)
 }
 
 extern void serial_initialize(void);
-int aml_try_factory_usb_burning(int flag, bd_t* bis)
+int aml_try_factory_usb_burning(int flag, struct bd_info* bis)
 {
     if (!is_tpl_loaded_from_usb()) return 1;
 
@@ -144,7 +144,7 @@ int aml_try_factory_usb_burning(int flag, bd_t* bis)
 #endif// #ifdef CONFIG_USB_BURNING_TOOL
 
 //burning flash from romboot stage
-int aml_burn_factory_producing(int flag, bd_t* bis)
+int aml_burn_factory_producing(int flag, struct bd_info* bis)
 {
 #ifdef CONFIG_USB_BURNING_TOOL
         if (is_tpl_loaded_from_usb())
@@ -163,7 +163,7 @@ int aml_burn_factory_producing(int flag, bd_t* bis)
 }
 
 
-int aml_try_factory_sdcard_burning(int flag, bd_t* bis)
+int aml_try_factory_sdcard_burning(int flag, struct bd_info* bis)
 {
         if (!is_tpl_loaded_from_ext_sdmmc()) return 1;
 #ifdef CONFIG_SILENT_CONSOLE

@@ -20,12 +20,12 @@ int is_tpl_loaded_from_ext_sdmmc(void);
 //Check if uboot loaded from external sdmmc or usb otg
 int aml_burn_check_uboot_loaded_for_burn(int flag);
 
-int aml_burn_factory_producing(int flag, bd_t* bis);
+int aml_burn_factory_producing(int flag, struct bd_info* bis);
 
 //usb producing mode, if tpl loaded from usb pc tool and auto enter producing mode
-int aml_try_factory_usb_burning(int flag, bd_t* bis);
+int aml_try_factory_usb_burning(int flag, struct bd_info* bis);
 
 //Auto enter sdcard burning if booted from sdcard and aml_sdc_burn.ini existed
-int aml_try_factory_sdcard_burning(int flag, bd_t* bis);
+int aml_try_factory_sdcard_burning(int flag, struct bd_info* bis);
 
 
