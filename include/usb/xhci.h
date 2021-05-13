@@ -1285,6 +1285,7 @@ int xhci_register(struct udevice *dev, struct xhci_hccr *hccr,
 extern struct dm_usb_ops xhci_usb_ops;
 
 struct xhci_ctrl *xhci_get_ctrl(struct usb_device *udev);
+void xhci_dwc3_phy_tuning_1(struct udevice *dev, int port);
 
 static inline dma_addr_t xhci_virt_to_bus(struct xhci_ctrl *ctrl, void *addr)
 {
