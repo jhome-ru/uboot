@@ -55,7 +55,8 @@
  *
  * For more complete example, see fat_itr_resolve()
  */
-
+#if 0
+//ndef fat_itr
 typedef struct {
 	fsdata    *fsdata;        /* filesystem parameters */
 	unsigned   clust;         /* current cluster */
@@ -72,6 +73,7 @@ typedef struct {
 	/* storage for current cluster in memory: */
 	u8         block[MAX_CLUSTSIZE] __aligned(ARCH_DMA_MINALIGN);
 } fat_itr;
+#endif
 
 static int fat_itr_isdir(fat_itr *itr);
 
@@ -101,7 +103,7 @@ static void downcase(char *str, size_t len)
 }
 
 static struct blk_desc *cur_dev;
-static disk_partition_t cur_part_info;
+static struct disk_partition cur_part_info;
 
 #define DOS_BOOT_MAGIC_OFFSET	0x1fe
 #define DOS_FS_TYPE_OFFSET	0x36
@@ -926,7 +928,7 @@ static int fat_itr_resolve(fat_itr *itr, const char *path, unsigned type)
     return -ENOENT;
 }
 
-static int _fat_set_blk_dev(struct blk_desc *dev_desc, disk_partition_t *info)
+static int _fat_set_blk_dev(struct blk_desc *dev_desc, struct disk_partition *info)
 {
     ALLOC_CACHE_ALIGN_BUFFER(unsigned char, buffer, dev_desc->blksz);
 
@@ -959,7 +961,7 @@ int optimus_fat_register_device(const char *ifname, const char *dev_part_str)
 {
     int dev, part;
     struct blk_desc *dev_desc;
-    disk_partition_t info;
+    struct disk_partition info;
 
     part = blk_get_device_part_str(ifname, dev_part_str, &dev_desc, &info, 1);
     if (part < 0) {
