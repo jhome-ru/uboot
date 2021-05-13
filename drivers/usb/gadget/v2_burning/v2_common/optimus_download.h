@@ -13,7 +13,6 @@
 #ifndef __OPTIMUS_DOWNLOAD_H__
 #define __OPTIMUS_DOWNLOAD_H__
 
-
 int optimus_buf_manager_init(const unsigned mediaAlignSz);
 int optimus_buf_manager_exit(void);
 int optimus_buf_manager_tplcmd_init(const char* mediaType, const char* partName, u64 partBaseOffset,
@@ -201,7 +200,8 @@ int optimus_work_mode_set(int workmode);
 #define OPTIMUS_BURN_TARGET_SUPPORT_UBIFS       0
 #endif// #if defined(CONFIG_AML_MTD) && (defined(UBIFS_IMG) || defined(CONFIG_CMD_UBIFS))
 
-#ifndef P_AO_SEC_SD_CFG0
+#if 0 
+//ndef P_AO_SEC_SD_CFG0
 #define P_AO_SEC_GP_CFG0 	SYSCTRL_SEC_STATUS_REG4
 #define P_PREG_STICKY_REG2	SYSCTRL_SEC_STICKY_REG2
 #endif// #ifndef P_AO_SEC_SD_CFG0

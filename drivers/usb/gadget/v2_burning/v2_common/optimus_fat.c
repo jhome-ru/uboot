@@ -135,16 +135,16 @@ static void get_name(dir_entry *dirent, char *s_name)
 {
     char *ptr;
 
-    memcpy(s_name, dirent->name, 8);
+    memcpy(s_name, dirent->nameext.name, 8);
     s_name[8] = '\0';
     ptr = s_name;
     while (*ptr && *ptr != ' ')
         ptr++;
     if (dirent->lcase & CASE_LOWER_BASE)
         downcase(s_name, (unsigned)(ptr - s_name));
-    if (dirent->ext[0] && dirent->ext[0] != ' ') {
+    if (dirent->nameext.ext[0] && dirent->nameext.ext[0] != ' ') {
         *ptr++ = '.';
-        memcpy(ptr, dirent->ext, 3);
+        memcpy(ptr, dirent->nameext.ext, 3);
         if (dirent->lcase & CASE_LOWER_EXT)
             downcase(ptr, 3);
         ptr[3] = '\0';
@@ -748,7 +748,7 @@ static dir_entry *next_dent(fat_itr *itr)
     }
 
     /* have we reached the last valid entry? */
-    if (itr->dent->name[0] == 0)
+    if (itr->dent->nameext.name[0] == 0)
         return NULL;
 
     return itr->dent;
@@ -757,7 +757,7 @@ static dir_entry *next_dent(fat_itr *itr)
 static dir_entry *extract_vfat_name(fat_itr *itr)
 {
     struct dir_entry *dent = itr->dent;
-    int seqn = itr->dent->name[0] & ~LAST_LONG_ENTRY_MASK;
+    int seqn = itr->dent->nameext.name[0] & ~LAST_LONG_ENTRY_MASK;
     u8 chksum, alias_checksum = ((dir_slot *)dent)->alias_checksum;
     int n = 0;
 
@@ -779,12 +779,12 @@ static dir_entry *extract_vfat_name(fat_itr *itr)
 
     itr->l_name[n] = '\0';
 
-    chksum = mkcksum(dent->name, dent->ext);
+    chksum = mkcksum(dent->nameext.name, dent->nameext.ext);
 
     /* checksum mismatch could mean deleted file, etc.. skip it: */
     if (chksum != alias_checksum) {
         debug("** chksum=%x, alias_checksum=%x, l_name=%s, s_name=%8s.%3s\n",
-                chksum, alias_checksum, itr->l_name, dent->name, dent->ext);
+                chksum, alias_checksum, itr->l_name, dent->nameext.name, dent->nameext.ext);
         return NULL;
     }
 
@@ -811,13 +811,13 @@ static int fat_itr_next(fat_itr *itr)
         if (!dent)
             return 0;
 
-        if (dent->name[0] == DELETED_FLAG ||
-                dent->name[0] == aRING)
+        if (dent->nameext.name[0] == DELETED_FLAG ||
+                dent->nameext.name[0] == aRING)
             continue;
 
         if (dent->attr & ATTR_VOLUME) {
             if ((dent->attr & ATTR_VFAT) == ATTR_VFAT &&
-                    (dent->name[0] & LAST_LONG_ENTRY_MASK)) {
+                    (dent->nameext.name[0] & LAST_LONG_ENTRY_MASK)) {
                 dent = extract_vfat_name(itr);
                 if (!dent)
                     continue;

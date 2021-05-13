@@ -184,8 +184,27 @@ typedef struct {
 	int	fats;		/* Number of FATs */
 } fsdata;
 
+/* !!!!! DISABLE TO AMLOGIC
 struct fat_itr;
 typedef struct fat_itr fat_itr;
+*/
+typedef struct {
+	fsdata    *fsdata;	/* filesystem parameters */
+	unsigned   clust;	 /* current cluster */
+	int	last_cluster;  /* set once we've read last cluster */
+	int	is_root;       /* is iterator at root directory */
+	int	remaining;     /* remaining dent's in current cluster */
+
+	/* current iterator position values: */
+	dir_entry *dent;	  /* current directory entry */
+	char       l_name[VFAT_MAXLEN_BYTES];    /* long (vfat) name */
+	char       s_name[14];    /* short 8.3 name */
+	char       *name;	  /* l_name if there is one, else s_name */
+
+	/* storage for current cluster in memory: */
+	u8	 block[MAX_CLUSTSIZE] __aligned(ARCH_DMA_MINALIGN);
+} fat_itr;
+
 
 static inline u32 clust_to_sect(fsdata *fsdata, u32 clust)
 {
