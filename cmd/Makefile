@@ -10,6 +10,8 @@ obj-$(CONFIG_CMD_BOOTM) += bootm.o
 obj-y += help.o
 obj-y += panic.o
 obj-y += version.o
+obj-$(CONFIG_CMD_MMC) += aml_mmc.o
+obj-$(CONFIG_SPI_NAND) += spi_nand.o
 
 # command
 obj-$(CONFIG_CMD_ACPI) += acpi.o
@@ -39,6 +41,7 @@ obj-$(CONFIG_CMD_BUTTON) += button.o
 obj-$(CONFIG_CMD_CACHE) += cache.o
 obj-$(CONFIG_CMD_CBFS) += cbfs.o
 obj-$(CONFIG_CMD_CLK) += clk.o
+obj-$(CONFIG_CMD_CLKMSR)+= clkmsr.o
 obj-$(CONFIG_CMD_CLS) += cls.o
 obj-$(CONFIG_CMD_CONFIG) += config.o
 obj-$(CONFIG_CMD_CONITRACE) += conitrace.o
@@ -55,6 +58,7 @@ endif
 obj-$(CONFIG_CMD_ADTIMG) += adtimg.o
 obj-$(CONFIG_CMD_ABOOTIMG) += abootimg.o
 obj-$(CONFIG_CMD_ECHO) += echo.o
+obj-$(CONFIG_CMD_EFUSE) += efuse.o
 obj-$(CONFIG_ENV_IS_IN_EEPROM) += eeprom.o
 obj-$(CONFIG_CMD_EEPROM) += eeprom.o
 obj-$(CONFIG_EFI_STUB) += efi.o
@@ -75,6 +79,8 @@ obj-$(CONFIG_CMD_GETTIME) += gettime.o
 obj-$(CONFIG_CMD_GPIO) += gpio.o
 obj-$(CONFIG_CMD_HVC) += smccc.o
 obj-$(CONFIG_CMD_I2C) += i2c.o
+obj-$(CONFIG_CMD_WATCHDOG) += watchdog.o
+obj-$(CONFIG_CMD_JTAG) += jtag.o
 obj-$(CONFIG_CMD_IOTRACE) += iotrace.o
 obj-$(CONFIG_CMD_HASH) += hash.o
 obj-$(CONFIG_CMD_IDE) += ide.o disk.o
@@ -185,6 +191,7 @@ obj-$(CONFIG_CMD_GPT) += gpt.o
 obj-$(CONFIG_CMD_MBR) += mbr.o
 obj-$(CONFIG_CMD_ETHSW) += ethsw.o
 obj-$(CONFIG_CMD_AXI) += axi.o
+obj-$(CONFIG_CMD_SARADC) += saradc.o
 obj-$(CONFIG_CMD_PVBLOCK) += pvblock.o
 
 # Power
@@ -207,6 +214,9 @@ obj-$(CONFIG_X86) += x86/
 obj-$(CONFIG_ARCH_MVEBU) += mvebu/
 endif # !CONFIG_SPL_BUILD
 
+obj-$(CONFIG_CMD_DSPRUN) += cmd_dsprun.o
+obj-$(CONFIG_CMD_DSPSET) += cmd_dspset.o
+
 obj-$(CONFIG_$(SPL_)CMD_TLV_EEPROM) += tlv_eeprom.o
 
 # core command
@@ -215,6 +225,11 @@ obj-y += nvedit.o
 obj-$(CONFIG_CMD_BCM_EXT_UTILS) += broadcom/
 
 obj-$(CONFIG_TI_COMMON_CMD_OPTIONS) += ti/
+
+obj-$(CONFIG_AML_DRIVER) += amlogic/
+
+obj-$(CONFIG_AML_TSENSOR) += amlogic/cmd_tsensor.o
+obj-$(CONFIG_AML_OSCRING) += amlogic/cmd_ringmsr.o
 
 filechk_data_gz = (echo "static const char data_gz[] ="; cat $< | scripts/bin2c; echo ";")
 

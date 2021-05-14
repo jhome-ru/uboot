@@ -17,6 +17,7 @@
 #include <asm/io.h>
 #include <asm/arch/mailbox.h>
 #include <asm/arch/cpu_config.h>
+#include <cpu_func.h>
 
 extern unsigned int get_multi_dt_entry(unsigned long fdt_addr);
 int is_optimus_storage_inited(void);
@@ -78,7 +79,6 @@ static int bootloader_copy_sz(void)
 
 static int _bootloader_write(u8* dataBuf, unsigned off, unsigned binSz, const char* bootName)
 {
-    int iCopy = 0;
     const int bootCpyNum = store_boot_copy_num(bootName);
     const int bootCpySz  = (int)store_boot_copy_size(bootName);
     FB_MSG("[%s] CpyNum %d, bootCpySz 0x%x\n", bootName, bootCpyNum, bootCpySz);
@@ -89,7 +89,7 @@ static int _bootloader_write(u8* dataBuf, unsigned off, unsigned binSz, const ch
         return -__LINE__;
     }
 
-    for (; iCopy < bootCpyNum; ++iCopy) {
+    for (int iCopy = 0; iCopy < bootCpyNum; ++iCopy) {
         int ret = store_boot_write(bootName, iCopy, binSz, dataBuf);
         if (ret) FBS_EXIT(_ACK, "FAil in program[%s] at copy[%d]\n", bootName, iCopy);
     }
@@ -127,7 +127,7 @@ static int bootloader_write(u8* dataBuf, unsigned off, unsigned binSz)
 
 static int _bootloader_read(u8* pBuf, unsigned off, unsigned binSz, const char* bootName)
 {
-    int iCopy = 0;
+    // int iCopy = 0;
     const int bootCpyNum = store_boot_copy_num(bootName);
     const int bootCpySz  = (int)store_boot_copy_size(bootName);
 
@@ -137,7 +137,7 @@ static int _bootloader_read(u8* pBuf, unsigned off, unsigned binSz, const char* 
     }
     if (off) FBS_EXIT(_ACK, "current only 0 suuported!\n");
 
-    for (iCopy = 0; iCopy < bootCpyNum; ++iCopy) {
+    for (int iCopy = 0; iCopy < bootCpyNum; ++iCopy) {
         void* dataBuf = iCopy ? pBuf + binSz : pBuf;
         int ret = store_boot_read(bootName, iCopy, binSz, dataBuf);
         if (ret) FBS_EXIT("Fail to read boot[%s] at copy[%d]\n", bootName, iCopy);
@@ -310,7 +310,7 @@ static int optimus_download_bootloader_image(struct ImgBurnInfo* pDownInfo, u32 
 {
     int ret = OPT_DOWN_OK;
     int size = dataSzReceived;
-    int iCopy = 0;
+    // int iCopy = 0;
 
     if (dataSzReceived < pDownInfo->imgPktSz) {
         DWN_ERR("please write back bootloader after all data rx end.0x(%x, %x)\n", dataSzReceived, (u32)pDownInfo->imgPktSz);
@@ -336,7 +336,7 @@ static int optimus_verify_bootloader(struct ImgBurnInfo* pDownInfo, u8* genSum)
     int ret = OPT_DOWN_OK;
     unsigned char* pBuf = (unsigned char*)OPTIMUS_DOWNLOAD_TRANSFER_BUF_ADDR;
     int size = 0;
-    int iCopy = 0;
+    //int iCopy = 0;
     int bootRealSz = pDownInfo->imgPktSz;
 
     size=bootRealSz;
@@ -1354,7 +1354,7 @@ void optimus_reset(const int cfgFlag)
     while (--i > 0) {;}
 
     /*disable_interrupts();*/
-	reset_cpu(0);
+	reset_cpu();
 
     while (i++)
     {

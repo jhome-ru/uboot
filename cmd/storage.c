@@ -387,7 +387,7 @@ int store_rsv_protect(const char *name, bool ops)
 	return store->protect_rsv(name, ops);
 }
 
-static int do_store_init(cmd_tbl_t *cmdtp,
+static int do_store_init(struct cmd_tbl *cmdtp,
 			 int flag, int argc, char * const argv[])
 {
 	u32 init_flag = 1;
@@ -430,7 +430,7 @@ void store_print_device(struct storage_t *store_dev)
 			store_dev->info.mode);
 }
 
-static int do_store_device(cmd_tbl_t *cmdtp,
+static int do_store_device(struct cmd_tbl *cmdtp,
 			int flag, int argc, char * const argv[])
 {
 	if (argc == 2) {
@@ -471,7 +471,7 @@ static int do_store_device(cmd_tbl_t *cmdtp,
 	return CMD_RET_USAGE;
 }
 
-static int do_store_partition(cmd_tbl_t *cmdtp,
+static int do_store_partition(struct cmd_tbl *cmdtp,
 			int flag, int argc, char * const argv[])
 {
 	struct storage_t *store_dev;
@@ -498,7 +498,7 @@ static int do_store_partition(cmd_tbl_t *cmdtp,
 #ifdef CONFIG_AML_MTD
 extern int is_mtd_store_boot_area(const char *part_name);
 #endif
-static int do_store_erase(cmd_tbl_t *cmdtp,
+static int do_store_erase(struct cmd_tbl *cmdtp,
 			  int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -574,7 +574,7 @@ static int do_store_erase(cmd_tbl_t *cmdtp,
 	return ret;
 }
 
-static int do_store_read(cmd_tbl_t *cmdtp,
+static int do_store_read(struct cmd_tbl *cmdtp,
 			 int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -622,7 +622,7 @@ static int do_store_read(cmd_tbl_t *cmdtp,
 	return ret;
 }
 
-static int do_store_write(cmd_tbl_t *cmdtp,
+static int do_store_write(struct cmd_tbl *cmdtp,
 			  int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -670,7 +670,7 @@ static int do_store_write(cmd_tbl_t *cmdtp,
 	return ret;
 }
 
-static int do_store_boot_read(cmd_tbl_t *cmdtp,
+static int do_store_boot_read(struct cmd_tbl *cmdtp,
 			      int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -696,7 +696,7 @@ static int do_store_boot_read(cmd_tbl_t *cmdtp,
 	return store->boot_read(name, cpy, size, (u_char *)addr);
 }
 
-static int do_store_boot_write(cmd_tbl_t *cmdtp,
+static int do_store_boot_write(struct cmd_tbl *cmdtp,
 			       int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -723,7 +723,7 @@ static int do_store_boot_write(cmd_tbl_t *cmdtp,
 	return store->boot_write(name, cpy, size, (u_char *)addr);
 }
 
-static int do_store_boot_erase(cmd_tbl_t *cmdtp,
+static int do_store_boot_erase(struct cmd_tbl *cmdtp,
 			       int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -746,7 +746,7 @@ static int do_store_boot_erase(cmd_tbl_t *cmdtp,
 	return store->boot_erase(name, cpy);
 }
 
-static int do_store_rsv_ops(cmd_tbl_t *cmdtp,
+static int do_store_rsv_ops(struct cmd_tbl *cmdtp,
 			    int flag, int argc, char * const argv[])
 {
 	struct storage_t *store = store_get_current();
@@ -797,7 +797,7 @@ static int do_store_rsv_ops(cmd_tbl_t *cmdtp,
 	return CMD_RET_USAGE;
 }
 
-static cmd_tbl_t cmd_store_sub[] = {
+static struct cmd_tbl cmd_store_sub[] = {
 	U_BOOT_CMD_MKENT(init, 4, 0, do_store_init, "", ""),
 	U_BOOT_CMD_MKENT(device, 4, 0, do_store_device, "", ""),
 	U_BOOT_CMD_MKENT(partition, 3, 0, do_store_partition, "", ""),
@@ -811,9 +811,9 @@ static cmd_tbl_t cmd_store_sub[] = {
 	U_BOOT_CMD_MKENT(rsv, 6, 0, do_store_rsv_ops, "", ""),
 };
 
-static int do_store(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_store(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
-	cmd_tbl_t *c;
+	struct cmd_tbl *c;
 
 	if (argc < 2)
 		return CMD_RET_USAGE;

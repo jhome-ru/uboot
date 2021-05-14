@@ -244,7 +244,7 @@ _finish:
 //step 1: get script file size, and get script file contents
 //step 2: read image file
 //"Usage: sdc_update partiton image_file_path [imgFmt, verifyFile]\n"   //usage
-int do_sdc_update(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+int do_sdc_update(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     const char* partName    = argv[1];

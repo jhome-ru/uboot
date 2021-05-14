@@ -766,7 +766,7 @@ int optimus_burn_package_in_sdmmc(const char* sdc_cfg_file)
     return rcode;
 }
 
-int do_sdc_burn(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+int do_sdc_burn(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
     int rcode = 0;
     const char* sdc_cfg_file = argv[1];

@@ -184,10 +184,11 @@ typedef struct {
 	int	fats;		/* Number of FATs */
 } fsdata;
 
-/* !!!!! DISABLE TO AMLOGIC
+/* !!!!! DISABLE TO AMLOGIC */
 struct fat_itr;
 typedef struct fat_itr fat_itr;
-*/
+
+#if 0
 typedef struct {
 	fsdata    *fsdata;	/* filesystem parameters */
 	unsigned   clust;	 /* current cluster */
@@ -204,7 +205,7 @@ typedef struct {
 	/* storage for current cluster in memory: */
 	u8	 block[MAX_CLUSTSIZE] __aligned(ARCH_DMA_MINALIGN);
 } fat_itr;
-
+#endif
 
 static inline u32 clust_to_sect(fsdata *fsdata, u32 clust)
 {
