@@ -139,13 +139,13 @@ void xhci_dwc3_phy_tuning_1(struct udevice *dev, int port)
 {
     unsigned long phy_reg_base;
     int ret, i;
-    struct xhci_dwc3_platdata *plat;
+    struct xhci_dwc3_plat *plat;
     struct udevice *udev = dev;
 
 	plat = dev_get_plat(udev);
 
-    for (i = 0; i < plat->num_phys; i++) {
-		ret = generic_phy_tuning(&plat->usb_phys[i], port);
+    for (i = 0; i < plat->phys.count; i++) {
+		ret = generic_phy_tuning(&plat->phys.phys[i], port);
 		if (ret) {
 			pr_err("Can't tuning USB PHY%d for %s\n",
 			       i, dev->name);
@@ -157,39 +157,39 @@ void xhci_dwc3_phy_tuning_1(struct udevice *dev, int port)
 
 static int xhci_dwc3_setup_phy(struct udevice *dev)
 {
-	struct xhci_dwc3_platdata *plat = dev_get_plat(dev);
+	struct xhci_dwc3_plat *plat = dev_get_plat(dev);
 	int i, ret, count;
 
 	/* Return if no phy declared */
 	if (!dev_read_prop(dev, "phys", NULL))
 		return 0;
 
-	count = dev_count_phandle_with_args(dev, "phys", "#phy-cells");
+	count = dev_count_phandle_with_args(dev, "phys", "#phy-cells", 0);
 	if (count <= 0)
 		return count;
 
-	plat->usb_phys = devm_kcalloc(dev, count, sizeof(struct phy),
+	plat->phys.phys = devm_kcalloc(dev, count, sizeof(struct phy),
 				      GFP_KERNEL);
-	if (!plat->usb_phys)
+	if (!plat->phys.phys)
 		return -ENOMEM;
 
 #ifdef CONFIG_AML_USB
-	plat->num_phys = 0;
+	plat->phys.count = 0;
 #endif
 
 	for (i = 0; i < count; i++) {
-		ret = generic_phy_get_by_index(dev, i, &plat->usb_phys[i]);
+		ret = generic_phy_get_by_index(dev, i, &plat->phys.phys[i]);
 		if (ret && ret != -ENOENT) {
 			pr_err("Failed to get USB PHY%d for %s\n",
 			       i, dev->name);
 			return ret;
 		}
 
-		++plat->num_phys;
+		++plat->phys.count;
 	}
 
-	for (i = 0; i < plat->num_phys; i++) {
-		ret = generic_phy_init(&plat->usb_phys[i]);
+	for (i = 0; i < plat->phys.count; i++) {
+		ret = generic_phy_init(&plat->phys.phys[i]);
 		if (ret) {
 			pr_err("Can't init USB PHY%d for %s\n",
 			       i, dev->name);
@@ -197,8 +197,8 @@ static int xhci_dwc3_setup_phy(struct udevice *dev)
 		}
 	}
 
-	for (i = 0; i < plat->num_phys; i++) {
-		ret = generic_phy_power_on(&plat->usb_phys[i]);
+	for (i = 0; i < plat->phys.count; i++) {
+		ret = generic_phy_power_on(&plat->phys.phys[i]);
 		if (ret) {
 			pr_err("Can't power USB PHY%d for %s\n",
 			       i, dev->name);
@@ -209,10 +209,10 @@ static int xhci_dwc3_setup_phy(struct udevice *dev)
 #ifdef CONFIG_AML_USB
 	int usb_type = 0;
 
-	for (i = 0; i < plat->num_phys; i++) {
-		dev_read_u32((&plat->usb_phys[i])->dev, "phy-version", &usb_type);
+	for (i = 0; i < plat->phys.count; i++) {
+		dev_read_u32((&plat->phys.phys[i])->dev, "phy-version", &usb_type);
 		if (usb_type == 2) {
-			dev_read_u32((&plat->usb_phys[i])->dev, "portnum", &usb2portnum);
+			dev_read_u32((&plat->phys.phys[i])->dev, "portnum", &usb2portnum);
 		}
 	}
 #endif
@@ -221,31 +221,31 @@ static int xhci_dwc3_setup_phy(struct udevice *dev)
 
 phys_poweron_err:
 	for (; i >= 0; i--)
-		generic_phy_power_off(&plat->usb_phys[i]);
+		generic_phy_power_off(&plat->phys.phys[i]);
 
-	for (i = 0; i < plat->num_phys; i++)
-		generic_phy_exit(&plat->usb_phys[i]);
+	for (i = 0; i < plat->phys.count; i++)
+		generic_phy_exit(&plat->phys.phys[i]);
 
 	return ret;
 
 phys_init_err:
 	for (; i >= 0; i--)
-		generic_phy_exit(&plat->usb_phys[i]);
+		generic_phy_exit(&plat->phys.phys[i]);
 
 	return ret;
 }
 
 static int xhci_dwc3_shutdown_phy(struct udevice *dev)
 {
-	struct xhci_dwc3_platdata *plat = dev_get_plat(dev);
+	struct xhci_dwc3_plat *plat = dev_get_plat(dev);
 	int i, ret;
 
-	for (i = 0; i < plat->num_phys; i++) {
-		if (!generic_phy_valid(&plat->usb_phys[i]))
+	for (i = 0; i < plat->phys.count; i++) {
+		if (!generic_phy_valid(&plat->phys.phys[i]))
 			continue;
 
-		ret = generic_phy_power_off(&plat->usb_phys[i]);
-		ret |= generic_phy_exit(&plat->usb_phys[i]);
+		ret = generic_phy_power_off(&plat->phys.phys[i]);
+		ret |= generic_phy_exit(&plat->phys.phys[i]);
 		if (ret) {
 			pr_err("Can't shutdown USB PHY%d for %s\n",
 			       i, dev->name);
