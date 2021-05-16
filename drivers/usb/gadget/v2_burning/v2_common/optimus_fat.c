@@ -321,7 +321,7 @@ get_cluster(fsdata *mydata, __u32 clustnum, __u8 *buffer, unsigned long size)
  * into 'buffer'.
  * Update the number of bytes read in *gotsize or return -1 on fatal errors.
  */
-extern __u8 get_contents_vfatname_block[MAX_CLUSTSIZE];//extern as large, 64k wo
+/* for for v2021.07 extern __u8 get_contents_vfatname_block[MAX_CLUSTSIZE];//extern as large, 64k wo */
 
 static int _get_contents(int fd, loff_t pos,
         __u8 *buffer, loff_t maxsize, loff_t *gotsize)
@@ -352,16 +352,26 @@ static int _get_contents(int fd, loff_t pos,
     /* align to beginning of next cluster if any */
     const int firstClusterNotAlign = pos & clusterMask;
     if (firstClusterNotAlign) {
+        __u8 *tmp_buffer;
+
         const int rightPart = bytesperclust - firstClusterNotAlign;
         actsize = min(rightPart, (int)maxsize);
         DWN_DBG("actsize 0x%x, firstClusterNotAlign 0x%x, curclust 0x%x\n",
                 actsize, firstClusterNotAlign, curclust);
-        if (get_cluster(mydata, curclust, get_contents_vfatname_block, bytesperclust)) {
+        tmp_buffer = malloc_cache_aligned(actsize);
+        if (!tmp_buffer) {
+            debug("Error: allocating buffer\n");
+            return -ENOMEM;
+        }
+
+        if (get_cluster(mydata, curclust, tmp_buffer, actsize) != 0) {
             printf("Error reading cluster\n");
+            free(tmp_buffer);
             return -1;
         }
         maxsize -= actsize;
-        memcpy(buffer, get_contents_vfatname_block + firstClusterNotAlign, actsize);
+        memcpy(buffer, tmp_buffer + firstClusterNotAlign, actsize);
+        free(tmp_buffer);
         *gotsize = actsize;
 
         if (maxsize || rightPart == actsize) {
