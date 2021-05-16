@@ -210,7 +210,8 @@ static int disk_write(__u32 block, __u32 nr_blocks, void *buf)
 /*
  * Write fat buffer into block device
  */
-static int flush_dirty_fat_buffer(fsdata *mydata)
+/* v2019.01-amlogic static */
+ int flush_dirty_fat_buffer(fsdata *mydata)
 {
 	int getsize = FATBUFBLOCKS;
 	__u32 fatlength = mydata->fatlength;

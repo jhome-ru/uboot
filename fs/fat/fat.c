@@ -146,15 +146,18 @@ static void get_name(dir_entry *dirent, char *s_name)
 		*s_name = DELETED_FLAG;
 }
 
-static int flush_dirty_fat_buffer(fsdata *mydata);
-
+/* dirty hack for use flush_dirty_fat_buffer from fat_write.c */
 #if !CONFIG_IS_ENABLED(FAT_WRITE)
 /* Stub for read only operation */
-int flush_dirty_fat_buffer(fsdata *mydata)
+static int flush_dirty_fat_buffer(fsdata *mydata)
 {
 	(void)(mydata);
 	return 0;
 }
+#else
+
+int flush_dirty_fat_buffer(fsdata *mydata);
+
 #endif
 
 /*
