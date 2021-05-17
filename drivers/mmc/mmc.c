@@ -26,6 +26,86 @@
 #include <div64.h>
 #include "mmc_private.h"
 
+/* v2019.01-amlogic addon begin */
+#include <emmc_partitions.h>
+#include <partition_table.h>
+#include <amlogic/storage.h>
+#include <asm/arch/secure_apb.h>
+#include <asm/arch/sd_emmc.h>
+
+struct aml_pattern aml_pattern_table[] = {
+	AML_PATTERN_ELEMENT(MMC_PATTERN_NAME, CALI_PATTERN),
+	AML_PATTERN_ELEMENT(MMC_MAGIC_NAME, MAGIC_PATTERN),
+	AML_PATTERN_ELEMENT(MMC_RANDOM_NAME, RANDOM_PATTERN),
+};
+extern int emmc_probe(uint32_t init_flag);
+
+bool emmckey_is_access_range_legal (struct mmc *mmc, ulong start, lbaint_t blkcnt) {
+	ulong key_start_blk, key_end_blk;
+	u64 key_glb_offset;
+	struct partitions * part = NULL;
+	struct virtual_partition *vpart = NULL;
+	if (IS_MMC(mmc)) {
+		vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+		part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+		key_glb_offset = part->offset + vpart->offset;
+		key_start_blk = (key_glb_offset / MMC_BLOCK_SIZE);
+		key_end_blk = ((key_glb_offset + vpart->size) / MMC_BLOCK_SIZE - 1);
+		if (!(info_disprotect & DISPROTECT_KEY)) {
+			if ((key_start_blk <= (start + blkcnt -1))
+				&& (key_end_blk >= start)
+				&& (blkcnt != start)) {
+				pr_info("%s, keys %ld, keye %ld, start %ld, blkcnt %ld\n",
+						mmc->cfg->name, key_start_blk,
+						key_end_blk, start, blkcnt);
+				pr_err("Emmckey: Access range is illegal!\n");
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+int emmc_boot_chk(struct mmc *mmc)
+{
+	u32 val = 0;
+
+	if (strcmp(mmc->dev->name, "emmc"))
+		return 0;
+
+	val = readl(SEC_AO_SEC_GP_CFG0);
+	pr_info("SEC_AO_SEC_GP_CFG0 = %x\n", val);
+	if ((val & 0xf) == 0x1)
+		return 1;
+
+	return 0;
+}
+
+#if CONFIG_IS_ENABLED(MMC_TINY)
+static struct mmc mmc_static;
+struct mmc *find_mmc_device(int dev_num)
+{
+	return &mmc_static;
+}
+
+void mmc_do_preinit(void)
+{
+	struct mmc *m = &mmc_static;
+#ifdef CONFIG_FSL_ESDHC_ADAPTER_IDENT
+	mmc_set_preinit(m, 1);
+#endif
+	if (m->preinit)
+		mmc_start_init(m);
+}
+
+struct blk_desc *mmc_get_blk_desc(struct mmc *mmc)
+{
+	return &mmc->block_dev;
+}
+#endif
+
+/* v2019.01-amlogic addon end */
+
 #define DEFAULT_CMD6_TIMEOUT_MS  500
 
 static int mmc_set_signal_voltage(struct mmc *mmc, uint signal_voltage);
@@ -67,8 +147,8 @@ __weak int board_mmc_getcd(struct mmc *mmc)
 #ifdef CONFIG_MMC_TRACE
 void mmmc_trace_before_send(struct mmc *mmc, struct mmc_cmd *cmd)
 {
-	printf("CMD_SEND:%d\n", cmd->cmdidx);
-	printf("\t\tARG\t\t\t 0x%08x\n", cmd->cmdarg);
+	pr_info("CMD_SEND:%d\n", cmd->cmdidx);
+	pr_info("\t\tARG\t\t\t 0x%08x\n", cmd->cmdarg);
 }
 
 void mmmc_trace_after_send(struct mmc *mmc, struct mmc_cmd *cmd, int ret)
@@ -77,47 +157,47 @@ void mmmc_trace_after_send(struct mmc *mmc, struct mmc_cmd *cmd, int ret)
 	u8 *ptr;
 
 	if (ret) {
-		printf("\t\tRET\t\t\t %d\n", ret);
+		pr_info("\t\tRET\t\t\t %d\n", ret);
 	} else {
 		switch (cmd->resp_type) {
 		case MMC_RSP_NONE:
-			printf("\t\tMMC_RSP_NONE\n");
+			pr_info("\t\tMMC_RSP_NONE\n");
 			break;
 		case MMC_RSP_R1:
-			printf("\t\tMMC_RSP_R1,5,6,7 \t 0x%08x \n",
+			pr_info("\t\tMMC_RSP_R1,5,6,7 \t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		case MMC_RSP_R1b:
-			printf("\t\tMMC_RSP_R1b\t\t 0x%08x \n",
+			pr_info("\t\tMMC_RSP_R1b\t\t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		case MMC_RSP_R2:
-			printf("\t\tMMC_RSP_R2\t\t 0x%08x \n",
+			pr_info("\t\tMMC_RSP_R2\t\t 0x%08x \n",
 				cmd->response[0]);
-			printf("\t\t          \t\t 0x%08x \n",
+			pr_info("\t\t          \t\t 0x%08x \n",
 				cmd->response[1]);
-			printf("\t\t          \t\t 0x%08x \n",
+			pr_info("\t\t          \t\t 0x%08x \n",
 				cmd->response[2]);
-			printf("\t\t          \t\t 0x%08x \n",
+			pr_info("\t\t          \t\t 0x%08x \n",
 				cmd->response[3]);
-			printf("\n");
-			printf("\t\t\t\t\tDUMPING DATA\n");
+			pr_info("\n");
+			pr_info("\t\t\t\t\tDUMPING DATA\n");
 			for (i = 0; i < 4; i++) {
 				int j;
-				printf("\t\t\t\t\t%03d - ", i*4);
+				pr_info("\t\t\t\t\t%03d - ", i*4);
 				ptr = (u8 *)&cmd->response[i];
 				ptr += 3;
 				for (j = 0; j < 4; j++)
-					printf("%02x ", *ptr--);
-				printf("\n");
+					pr_info("%02x ", *ptr--);
+				pr_info("\n");
 			}
 			break;
 		case MMC_RSP_R3:
-			printf("\t\tMMC_RSP_R3,4\t\t 0x%08x \n",
+			pr_info("\t\tMMC_RSP_R3,4\t\t 0x%08x \n",
 				cmd->response[0]);
 			break;
 		default:
-			printf("\t\tERROR MMC rsp not supported\n");
+			pr_info("\t\tERROR MMC rsp not supported\n");
 			break;
 		}
 	}
@@ -128,7 +208,7 @@ void mmc_trace_state(struct mmc *mmc, struct mmc_cmd *cmd)
 	int status;
 
 	status = (cmd->response[0] & MMC_STATUS_CURR_STATE) >> 9;
-	printf("CURR STATE:%d\n", status);
+	pr_info("CURR STATE:%d\n", status);
 }
 #endif
 
@@ -263,6 +343,9 @@ int mmc_send_status(struct mmc *mmc, unsigned int *status)
 	ret = mmc_send_cmd_retry(mmc, &cmd, NULL, 4);
 	mmc_trace_state(mmc, &cmd);
 	if (!ret)
+		if (cmd.response[0] & MMC_STATUS_SWITCH_ERROR) {
+			pr_err("mmc status switch error status =0x%x\n", status);
+		}
 		*status = cmd.response[0];
 
 	return ret;
@@ -488,6 +571,10 @@ ulong mmc_bread(struct blk_desc *block_dev, lbaint_t start, lbaint_t blkcnt,
 		pr_debug("%s: Failed to set blocklen\n", __func__);
 		return 0;
 	}
+/* v2019.01-amlogic addon begin */
+	if (!emmckey_is_access_range_legal(mmc, start, blkcnt))
+		return 0;
+/* v2019.01-amlogic addon end */
 
 	b_max = mmc_get_b_max(mmc, dst, blkcnt);
 
@@ -763,7 +850,6 @@ static int mmc_complete_op_cond(struct mmc *mmc)
 	return 0;
 }
 
-
 int mmc_send_ext_csd(struct mmc *mmc, u8 *ext_csd)
 {
 	struct mmc_cmd cmd;
@@ -784,6 +870,13 @@ int mmc_send_ext_csd(struct mmc *mmc, u8 *ext_csd)
 
 	return err;
 }
+/* v2019.01-amlogic addon begin */
+int mmc_get_ext_csd(struct mmc *mmc, u8 *ext_csd)
+{
+	return mmc_send_ext_csd(mmc, ext_csd);
+}
+/* v2019.01-amlogic addon end */
+
 
 static int __mmc_switch(struct mmc *mmc, u8 set, u8 index, u8 value,
 			bool send_status)
@@ -861,6 +954,29 @@ int mmc_boot_wp(struct mmc *mmc)
 }
 
 #if !CONFIG_IS_ENABLED(MMC_TINY)
+/* v2019.01-amlogic addon begin */
+u8 ext_csd_w[] = {191, 187, 185, 183, 179, 178, 177, 175,
+					173, 171, 169, 167, 165, 164, 163, 162,
+					161, 156, 155, 143, 140, 136, 134, 133,
+					132, 131, 62, 59, 56, 52, 37, 34,
+					33, 32, 31, 30, 29, 22, 17, 16, 15};
+
+int mmc_set_ext_csd(struct mmc *mmc, u8 index, u8 value)
+{
+	int ret = -21, i;
+
+	for (i = 0; i < sizeof(ext_csd_w); i++) {
+		if (ext_csd_w[i] == index)
+			break;
+	}
+	if (i != sizeof(ext_csd_w))
+		ret = mmc_switch(mmc, EXT_CSD_CMD_SET_NORMAL, index, value);
+
+	return ret;
+}
+
+/* v2019.01-amlogic addon end */
+
 static int mmc_set_card_speed(struct mmc *mmc, enum bus_mode mode,
 			      bool hsdowngrade)
 {
@@ -1175,7 +1291,6 @@ int mmc_hwpart_config(struct mmc *mmc,
 		mmc->erase_grp_size =
 			ext_csd[EXT_CSD_HC_ERASE_GRP_SIZE] * 1024;
 #endif
-
 	}
 
 	/* all OK, write the configuration */
@@ -1604,7 +1719,7 @@ int mmc_set_clock(struct mmc *mmc, uint clock, bool disable)
 	mmc->clock = clock;
 	mmc->clk_disable = disable;
 
-	debug("clock is %s (%dHz)\n", disable ? "disabled" : "enabled", clock);
+	pr_debug("clock is %s (%dHz)\n", disable ? "disabled" : "enabled", clock);
 
 	return mmc_set_ios(mmc);
 }
@@ -1980,7 +2095,7 @@ static int mmc_select_hs400(struct mmc *mmc)
 	err = mmc_execute_tuning(mmc, MMC_CMD_SEND_TUNING_BLOCK_HS200);
 	mmc->hs400_tuning = 0;
 	if (err) {
-		debug("tuning failed\n");
+		pr_debug("tuning failed\n");
 		return err;
 	}
 
@@ -2130,13 +2245,13 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 			if (mwt->mode == MMC_HS_400) {
 				err = mmc_select_hs400(mmc);
 				if (err) {
-					printf("Select HS400 failed %d\n", err);
+					pr_err("Select HS400 failed %d\n", err);
 					goto error;
 				}
 			} else if (mwt->mode == MMC_HS_400_ES) {
 				err = mmc_select_hs400es(mmc);
 				if (err) {
-					printf("Select HS400ES failed %d\n",
+					pr_err("Select HS400ES failed %d\n",
 					       err);
 					goto error;
 				}
@@ -2338,6 +2453,14 @@ static int mmc_startup_v4(struct mmc *mmc)
 	}
 #endif
 
+/* v2019.01-amlogic addon begin */
+	/* dev life time estimate type A/B */
+	mmc->dev_lifetime_est_typ_a
+		= ext_csd[EXT_CSD_DEV_LIFETIME_EST_TYP_A];
+	mmc->dev_lifetime_est_typ_b
+		= ext_csd[EXT_CSD_DEV_LIFETIME_EST_TYP_B];
+
+/* v2019.01-amlogic addon end */
 	/*
 	 * Host needs to enable ERASE_GRP_DEF bit if device is
 	 * partitioned. This bit will be lost every time after a reset
@@ -2882,7 +3005,13 @@ int mmc_start_init(struct mmc *mmc)
 		return -ENOMEDIUM;
 	}
 
-	err = mmc_get_op_cond(mmc);
+	// v2019.01-amlogic err = mmc_get_op_cond(mmc);
+	if (emmc_boot_chk(mmc)) {
+		mmc->high_capacity = 1;
+		mmc->rca = 1;
+		mmc->version = MMC_VERSION_UNKNOWN;
+	} else
+		err = mmc_get_op_cond(mmc);
 
 	if (!err)
 		mmc->init_in_progress = 1;
@@ -3101,6 +3230,102 @@ int mmc_set_bkops_enable(struct mmc *mmc)
 	return 0;
 }
 #endif
+
+/* v2019.01-amlogic addon begin */
+
+extern unsigned long blk_dwrite(struct blk_desc *block_dev, lbaint_t start,
+		lbaint_t blkcnt, const void *buffer);
+
+int mmc_key_write(unsigned char *buf, unsigned int size, uint32_t *actual_lenth)
+{
+	ulong start, start_blk, blkcnt, ret;
+	unsigned char * temp_buf = buf;
+	int i = 2, dev = EMMC_DTB_DEV;
+	struct partitions * part = NULL;
+	struct mmc *mmc;
+	struct virtual_partition *vpart = NULL;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+
+	mmc = find_mmc_device(dev);
+
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (size / MMC_BLOCK_SIZE);
+	info_disprotect |= DISPROTECT_KEY;
+	do {
+		ret = blk_dwrite(mmc_get_blk_desc(mmc), start_blk, blkcnt, temp_buf);
+		if (ret != blkcnt) {
+			pr_err("[%s] %d, mmc_bwrite error\n",
+				__func__, __LINE__);
+			return 1;
+		}
+		start_blk += vpart->size / MMC_BLOCK_SIZE;
+	} while (--i);
+	info_disprotect &= ~DISPROTECT_KEY;
+	return 0;
+}
+
+
+
+
+extern unsigned long blk_derase(struct blk_desc *block_dev, lbaint_t start,
+		lbaint_t blkcnt);
+
+int mmc_key_erase(void)
+{
+	ulong start, start_blk, blkcnt, ret;
+	struct partitions * part = NULL;
+	struct virtual_partition *vpart = NULL;
+	struct mmc *mmc;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+	int dev = EMMC_DTB_DEV;
+
+	mmc = find_mmc_device(dev);
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (vpart->size / MMC_BLOCK_SIZE) * 2;//key and backup key
+	info_disprotect |= DISPROTECT_KEY;
+	ret = blk_derase(mmc_get_blk_desc(mmc), start_blk, blkcnt);
+	info_disprotect &= ~DISPROTECT_KEY;
+	if (ret) {
+		pr_err("[%s] %d mmc_berase error\n",
+				__func__, __LINE__);
+		return 1;
+	}
+	return 0;
+}
+
+
+int mmc_key_read(unsigned char *buf, unsigned int size, uint32_t *actual_lenth)
+{
+	ulong start, start_blk, blkcnt, ret;
+	int dev = EMMC_DTB_DEV;
+	unsigned char *temp_buf = buf;
+	struct partitions * part = NULL;
+	struct mmc *mmc;
+	struct virtual_partition *vpart = NULL;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+
+	mmc = find_mmc_device(dev);
+	*actual_lenth =  0x40000;/*key size is 256KB*/
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (size / MMC_BLOCK_SIZE);
+	info_disprotect |= DISPROTECT_KEY;
+	ret = blk_dread(mmc_get_blk_desc(mmc), start_blk, blkcnt, temp_buf);
+	info_disprotect &= ~DISPROTECT_KEY;
+	if (ret != blkcnt) {
+		pr_err("[%s] %d, mmc_bread error\n",
+			__func__, __LINE__);
+		return 1;
+	}
+	return 0;
+}
+
+/* v2019.01-amlogic addon end */
 
 __weak int mmc_get_env_dev(void)
 {
