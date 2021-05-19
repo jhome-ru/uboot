@@ -9,6 +9,8 @@
 #define PINNAME_SIZE	10
 #define PINMUX_SIZE	40
 
+#include <dm/device.h>
+
 /**
  * struct pinconf_param - pin config parameters
  * @property:		Property name in DT nodes

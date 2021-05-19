@@ -10,9 +10,13 @@
 /* import from v2015-amlogic */
 #define CONFIG_AML_V2_FACTORY_BURN              1       //support facotry usb burning
 #define CONFIG_AML_FACTORY_BURN_LOCAL_UPGRADE   1       //support factory sdcard burning
-#define CONFIG_POWER_KEY_NOT_SUPPORTED_FOR_BURN 1       //There isn't power-key for factory sdcard burning
+//#define CONFIG_POWER_KEY_NOT_SUPPORTED_FOR_BURN 1       //There isn't power-key for factory sdcard burning
 #define CONFIG_SD_BURNING_SUPPORT_UI            1       //Displaying upgrading progress bar when sdcard/udisk burning
 
+/* ------------------------- */
+/* import from v2019-amlogic */
+#define PACKAGE_ID_MASK			0xFF
+#define CPU_ID_REG			P_AO_SEC_SD_CFG8
 /* ------------------------- */
 
 

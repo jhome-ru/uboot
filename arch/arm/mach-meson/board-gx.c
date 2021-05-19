@@ -25,6 +25,18 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+/* v2019-amlogic v2015-amlogic */
+#ifndef IS_FEAT_BOOT_VERIFY
+#define     AO_SEC_SD_CFG10                                    (0xc8100000 + (0x8a << 2))
+#define SEC_AO_SEC_SD_CFG10                                    (0xda100000 + (0x8a << 2))
+#define   P_AO_SEC_SD_CFG10                                    (volatile uint32_t *)(0xc8100000 + (0x8a << 2))
+
+int IS_FEAT_BOOT_VERIFY(void)
+{
+	return (readl(AO_SEC_SD_CFG10) & (1 << 4));
+}
+#endif
+
 int meson_get_boot_device(void)
 {
 	return readl(GX_AO_SEC_GP_CFG0) & GX_AO_BOOT_DEVICE;

@@ -19,8 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __MACH_MESSON_REGS_IO_H
-#define __MACH_MESSON_REGS_IO_H
+#ifndef __REGISTER_H__
+#define __REGISTER_H__
+//#ifndef __MACH_MESSON_REGS_IO_H
+//#define __MACH_MESSON_REGS_IO_H
 
 #ifndef __ASSEMBLY__
 
