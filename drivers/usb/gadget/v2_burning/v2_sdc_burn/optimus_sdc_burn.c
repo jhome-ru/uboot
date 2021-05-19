@@ -16,6 +16,10 @@
 
 #include <amlogic/aml_efuse.h>
 
+#ifndef IS_FEAT_BOOT_VERIFY
+#define IS_FEAT_BOOT_VERIFY() 0
+#endif// #ifndef IS_FEAT_BOOT_VERIFY
+
 static int is_bootloader_old(void)
 {
     int sdc_boot = is_tpl_loaded_from_ext_sdmmc();

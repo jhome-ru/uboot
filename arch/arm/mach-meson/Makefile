@@ -4,10 +4,11 @@
 
 obj-y += board-common.o sm.o board-info.o
 obj-$(CONFIG_MESON_GX) += board-gx.o 
-obj-$(CONFIG_MESON_GXL) += gxl_bl31_apis.o
+#obj-$(CONFIG_MESON_GXL) += gxl_bl31_apis.o
 obj-$(CONFIG_MESON_AXG) += board-axg.o
+#obj-$(CONFIG_MESON_AXG) += axg_bl31_apis.o
 obj-$(CONFIG_MESON_G12A) += board-g12a.o
 
 obj-y += cpu_id.o
-#obj-$(CONFIG_ARCH_MESON) += $(SOC)/
+obj-$(CONFIG_ARCH_MESON) += $(SOC)/
 obj-$(CONFIG_AML_HW_SHA2) += hard_sha2.o

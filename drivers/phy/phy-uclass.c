@@ -138,7 +138,6 @@ int generic_phy_tuning(struct phy *phy, int port)
 	return ops->tuning ? ops->tuning(phy, port) : 0;
 }
 
-
 int generic_phy_reset(struct phy *phy)
 {
 	struct phy_ops const *ops;

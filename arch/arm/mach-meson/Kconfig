@@ -53,8 +53,8 @@ config MESON_G12A
 
 endchoice
 
-config SYS_SOC
-	default "meson"
+#config SYS_SOC
+#	default "meson"
 
 config SYS_MALLOC_F_LEN
 	default 0x1000
@@ -67,18 +67,18 @@ config SYS_VENDOR
 	  Based on this option board/<CONFIG_SYS_VENDOR>/<CONFIG_SYS_BOARD> will
 	  be used.
 
-config SYS_BOARD
-	string "Board name"
-	default "p200" if MESON_GXBB
-	default "p212" if MESON_GXL
-	default "q200" if MESON_GXM
-	default "s400" if MESON_AXG
-	default "u200" if MESON_G12A
-	default ""
-	help
-	  This option contains information about board name.
-	  Based on this option board/<CONFIG_SYS_VENDOR>/<CONFIG_SYS_BOARD> will
-	  be used.
+#config SYS_BOARD
+#	string "Board name"
+#	default "p200" if MESON_GXBB
+#	default "p212" if MESON_GXL
+#	default "q200" if MESON_GXM
+#	default "s400" if MESON_AXG
+#	default "u200" if MESON_G12A
+#	default ""
+#	help
+#	  This option contains information about board name.
+#	  Based on this option board/<CONFIG_SYS_VENDOR>/<CONFIG_SYS_BOARD> will
+#	  be used.
 
 config SYS_CONFIG_NAME
 	string "Board configuration name"
@@ -88,8 +88,6 @@ config SYS_CONFIG_NAME
 	  Based on this option include/configs/<CONFIG_SYS_CONFIG_NAME>.h header
 	  will be used for board configuration.
 
-config SYS_MALLOC_F_LEN
-	default 0x1000
-
+source "board/amlogic/Kconfig"
 
 endif

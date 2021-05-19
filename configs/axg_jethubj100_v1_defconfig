@@ -23,7 +23,7 @@ CONFIG_CMD_GPIO=y
 CONFIG_CMD_MMC=y
 CONFIG_CMD_USB=y
 CONFIG_CMD_USB_MASS_STORAGE=y
-# CONFIG_CMD_SETEXPR is not set
+CONFIG_CMD_SETEXPR=y
 CONFIG_CMD_REGULATOR=y
 CONFIG_OF_CONTROL=y
 CONFIG_SYS_RELOC_GD_ENV_ADDR=y
@@ -60,6 +60,7 @@ USB_GADGET_OS_DESCRIPTORS=y
 
 CONFIG_DM_USB_GADGET=y
 CONFIG_USB_DWC3_GADGET=y
+#CONFIG_USB_DWC3_MESON_GXL=y
 CONFIG_USB_XHCI_HCD=y
 CONFIG_USB_XHCI_DWC3=y
 CONFIG_USB_DWC3=y
@@ -91,3 +92,39 @@ CONFIG_SYS_I2C_MESON=y
 CONFIG_CMD_MD5SUM=y
 CONFIG_MD5=y
 CONFIG_SHA1=y
+
+# add from v2015-amlogic                                                                                                                                                                   
+CONFIG_USB_GADGET=y                                                                                                                                                                        
+CONFIG_AML_V2_FACTORY_BURN=y                                                                                                                                                               
+CONFIG_POWER_KEY_NOT_SUPPORTED_FOR_BURN=y                                                                                                                                                  
+CONFIG_AML_STORAGE=y                                                                                                                                                                       
+CONFIG_CMD_DSPRUN=n                                                                                                                                                                        
+CONFIG_CMD_DSPSET=n                                                                                                                                                                        
+CONFIG_AML_STORE_WRAPPER=y                                                                                                                                                                 
+CONFIG_AML_DRIVER=y                                                                                                                                                                        
+CONFIG_SHA1=y                                                                                                                                                                              
+CONFIG_MTD_UBI=y                                                                                                                                                                           
+CONFIG_MTD=y                                                                                                                                                                               
+CONFIG_EFUSE=n                                                                                                                                                                             
+CONFIG_CMD_EFUSE=n                                                                                                                                                                         
+
+CONFIG_AML_V2_FACTORY_BURN=y
+CONFIG_AML_FACTORY_BURN_LOCAL_UPGRADE=yes
+#CONFIG_USB_BURNING_TOOL=y
+CONFIG_SD_BURNING_SUPPORT_UI=y
+CONFIG_SYS_SOC="axg"
+CONFIG_TARGET_JETHUBJ100_V1=y
+
+
+CONFIG_USB_XHCI_HCD=y
+CONFIG_USB_XHCI_DWC3=y
+CONFIG_USB_DWC3=y
+# CONFIG_USB_DWC3_GADGET is not set
+#CONFIG_USB_DWC3_MESON_GXL=y
+CONFIG_USB_GADGET=y
+CONFIG_USB_GADGET_VENDOR_NUM=0x1b8e
+CONFIG_USB_GADGET_PRODUCT_NUM=0xfada
+CONFIG_USB_GADGET_DWC2_OTG=y
+CONFIG_USB_GADGET_DOWNLOAD=y
+CONFIG_PHY_MESON_GXL=y
+CONFIG_PHY=y
