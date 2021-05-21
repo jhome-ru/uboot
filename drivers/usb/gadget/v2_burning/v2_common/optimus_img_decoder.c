@@ -559,7 +559,7 @@ static int test_pack(const char* interface, const char* device, const char* part
         }
     }
 
-#if 1
+#if 0 // jethub no screen
     test_item(hImg, "PARTITION", "logo", pBuf, ImagBufLen);
     test_item(hImg, "VERIFY", "logo", pBuf, 50);
 #endif
