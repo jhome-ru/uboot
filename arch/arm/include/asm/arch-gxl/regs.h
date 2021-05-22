@@ -1,3 +1,4 @@
+#define   P_AO_SEC_SD_CFG0                                     (volatile uint32_t *)(0xc8100000 + (0x80 << 2))
 
 
 

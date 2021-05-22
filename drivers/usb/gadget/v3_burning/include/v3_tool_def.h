@@ -15,7 +15,7 @@
 #include <common.h>
 #include <errno.h>
 #include <malloc.h>
-#include <environment.h>
+#include <env_internal.h>
 #include <asm/string.h>
 #include <asm/byteorder.h>
 #include <cli.h>

@@ -45,7 +45,7 @@ static int is_bl1_usb_protocol_DNL(void)
 #endif// #ifdef SYSCTRL_SEC_STATUS_REG1
 }
 
-int aml_v3_factory_usb_burning(int flag, bd_t* bis)
+int aml_v3_factory_usb_burning(int flag, struct bd_info* bis)
 {
     if (!is_boot_device_usb()) return 1;
     if (!is_bl1_usb_protocol_DNL()) return 1;
