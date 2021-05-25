@@ -83,6 +83,7 @@ int check_valid_dts(unsigned char *buffer)
 	dt_addr = (char *)buffer;
 #endif
 	pr_debug("start dts,buffer=%p,dt_addr=%p\n", buffer, dt_addr);
+	pr_warn("!A! fdt magic: %X\n", fdt_magic(dt_addr));
 	ret = fdt_check_header(dt_addr);
 	if ( ret < 0 )
 		printf("%s: %s\n",__func__,fdt_strerror(ret));
