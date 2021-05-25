@@ -925,6 +925,7 @@ int optimus_storage_init(int toErase)
         fdtAddr = get_multi_dt_entry(fdtAddr);
 #endif// #ifdef CONFIG_MULTI_DTB
         ret = fdt_check_header((char*)fdtAddr);
+        DWN_DBG("!A! fdt magic: %X\n",fdt_magic((char*)fdtAddr));
         unsigned fdtsz    = fdt_totalsize((char*)fdtAddr);
         if (ret || !fdtsz ) {
             DWN_ERR("Fail in fdt check header\n");

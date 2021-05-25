@@ -156,7 +156,9 @@ int optimus_update_progress(const unsigned thisBurnSz);
 #define DWN_ERR(fmt ...) printf("ERR(%s)L%d:", __FILE__, __LINE__);printf(fmt)
 #define DWN_MSG(fmt ...) printf("[MSG]"fmt)
 #define DWN_WRN(fmt ...) printf("[WRN]"fmt)
-#define DWN_DBG(...)
+#define DWN_DBG(fmt ...) printf("[DBG]"fmt) // !A! v2021.07-amlogic debug
+//#define DWN_DBG(...)
+
 #define DWN_HERE()    printf("f(%s)L%d\n", __FILE__, __LINE__)
 
 //common internal function

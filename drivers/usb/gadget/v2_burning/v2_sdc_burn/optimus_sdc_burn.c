@@ -643,6 +643,7 @@ int optimus_burn_with_cfg_file(const char* cfgFile)
         DWN_ERR("Fail to open image %s\n", pkgPath);
         ret = __LINE__; goto _finish;
     }
+    pr_debug("!A! Image opened\n");
 
     //update dtb for burning drivers
     ret = optimus_sdc_burn_dtb_load(hImg);
