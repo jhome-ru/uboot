@@ -25,7 +25,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 /* using mbr*/
-#define CONFIG_PTBL_MBR	(1)
+#define CONFIG_PTBL_MBR	(0)
 #if (CONFIG_PTBL_MBR)
 	/* cmpare partition name? */
 	#define CONFIG_CMP_PARTNAME	(0)
