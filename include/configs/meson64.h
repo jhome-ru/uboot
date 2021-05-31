@@ -7,6 +7,9 @@
 #ifndef __MESON64_CONFIG_H
 #define __MESON64_CONFIG_H
 
+#define CPU_ID_REG              P_AO_SEC_SD_CFG8
+#define PACKAGE_ID_MASK         0xFF
+
 /* Generic Interrupt Controller Definitions */
 #if (defined(CONFIG_MESON_AXG) || defined(CONFIG_MESON_G12A))
 #define GICD_BASE			0xffc01000

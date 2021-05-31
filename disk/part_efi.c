@@ -53,11 +53,11 @@ static inline u32 efi_crc32(const void *buf, u32 len)
 
 static int pmbr_part_valid(struct partition *part);
 static int is_pmbr_valid(legacy_mbr * mbr);
-static int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
+int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
 				gpt_header *pgpt_head, gpt_entry **pgpt_pte);
 static gpt_entry *alloc_read_gpt_entries(struct blk_desc *dev_desc,
 					 gpt_header *pgpt_head);
-static int is_pte_valid(gpt_entry * pte);
+int is_pte_valid(gpt_entry * pte);
 static int find_valid_gpt(struct blk_desc *dev_desc, gpt_header *gpt_head,
 			  gpt_entry **pgpt_pte);
 
@@ -315,7 +315,7 @@ int part_get_info_efi(struct blk_desc *dev_desc, int part,
 	return 0;
 }
 
-static int part_test_efi(struct blk_desc *dev_desc)
+int part_test_efi(struct blk_desc *dev_desc)
 {
 	ALLOC_CACHE_ALIGN_BUFFER_PAD(legacy_mbr, legacymbr, 1, dev_desc->blksz);
 
@@ -482,9 +482,16 @@ int gpt_fill_pte(struct blk_desc *dev_desc,
 		if (strlen(str_type_guid)) {
 			if (uuid_str_to_bin(str_type_guid, bin_type_guid,
 					    UUID_STR_FORMAT_GUID)) {
+#ifdef CONFIG_AML_GPT
+				char str[7] = {"default"};
+				strcpy(str_type_guid, str);
+				uuid_str_to_bin(str_type_guid, bin_type_guid,
+						UUID_STR_FORMAT_GUID);
+#else
 				printf("Partition no. %d: invalid type guid: %s\n",
 				       i, str_type_guid);
 				return -1;
+#endif
 			}
 		} else {
 			/* default partition type GUID */
@@ -514,6 +521,11 @@ int gpt_fill_pte(struct blk_desc *dev_desc,
 
 		if (partitions[i].bootable & PART_BOOTABLE)
 			gpt_e[i].attributes.fields.legacy_bios_bootable = 1;
+
+#ifdef CONFIG_ARCH_MESON
+		if (partitions[i].type[0])
+			gpt_e[i].attributes.fields.reserved = partitions[i].type[0];
+#endif /* CONFIG_ARCH_MESON */
 
 		/* partition name */
 		efiname_len = sizeof(gpt_e[i].partition_name)
@@ -935,7 +947,7 @@ static int is_pmbr_valid(legacy_mbr * mbr)
  * Description: returns 1 if valid,  0 on error, 2 if ignored header
  * If valid, returns pointers to PTEs.
  */
-static int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
+int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
 			gpt_header *pgpt_head, gpt_entry **pgpt_pte)
 {
 	/* Confirm valid arguments prior to allocation. */
@@ -1087,7 +1099,7 @@ static gpt_entry *alloc_read_gpt_entries(struct blk_desc *dev_desc,
  *
  * Description: returns 1 if valid,  0 on error.
  */
-static int is_pte_valid(gpt_entry * pte)
+int is_pte_valid(gpt_entry * pte)
 {
 	efi_guid_t unused_guid;
 

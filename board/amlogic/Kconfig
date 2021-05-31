@@ -310,6 +310,10 @@ config TARGET_G12B_W400_V1
 endif
 
 
+config DTB_BIND_KERNEL
+    bool "load dtb from boot part but not flash rsv"
+    default n
+
 
 
 # Amlogic boards
