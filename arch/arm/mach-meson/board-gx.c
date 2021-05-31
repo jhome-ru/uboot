@@ -11,7 +11,9 @@
 #include <asm/arch/eth.h>
 #include <asm/arch/gx.h>
 #include <asm/arch/mem.h>
+#if defined(CONFIG_VIDEO_MESON)
 #include <asm/arch/meson-vpu.h>
+#endif
 #include <asm/global_data.h>
 #include <asm/io.h>
 #include <asm/armv8/mmu.h>
