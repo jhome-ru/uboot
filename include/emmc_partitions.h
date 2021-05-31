@@ -11,7 +11,7 @@
 #include <linux/list.h>
 #include <mmc.h>
 #include <div64.h>
-#include <environment.h>
+#include <env_internal.h>
 #include <malloc.h>
 #include <asm/cache.h>
 #include <asm/arch/clock.h>

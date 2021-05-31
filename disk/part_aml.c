@@ -8,11 +8,13 @@
 #include <common.h>
 #include <command.h>
 #include <memalign.h>
+#include <part.h>
+
 #ifdef CONFIG_HAVE_BLOCK_DEVICE
 extern int get_part_info_from_tbl(struct blk_desc * dev_desc,
-	int part_num, disk_partition_t * info);
+	int part_num, struct disk_partition * info);
 int get_part_info_by_name(struct blk_desc *dev_desc,
-	const char *name, disk_partition_t *info);
+	const char *name, struct disk_partition *info);
 #define	AML_PART_DEBUG	(0)
 
 #if	(AML_PART_DEBUG)
@@ -26,7 +28,7 @@ int get_part_info_by_name(struct blk_desc *dev_desc,
 
 /* read back boot partitons */
 static int _get_partition_info_aml(struct blk_desc * dev_desc,
-	int part_num, disk_partition_t * info, int verb)
+	int part_num, struct disk_partition * info, int verb)
 {
 	int ret = 0;
 
@@ -48,13 +50,13 @@ static int _get_partition_info_aml(struct blk_desc * dev_desc,
 }
 
 int get_partition_info_aml(struct blk_desc * dev_desc,
-	int part_num, disk_partition_t * info)
+	int part_num, struct disk_partition * info)
 {
 	return(_get_partition_info_aml(dev_desc, part_num, info, 1));
 }
 
 int get_partition_info_aml_by_name(struct blk_desc *dev_desc,
-	const char *name, disk_partition_t *info)
+	const char *name, struct disk_partition *info)
 {
 	return (get_part_info_by_name(dev_desc,
 		name, info));
@@ -62,7 +64,7 @@ int get_partition_info_aml_by_name(struct blk_desc *dev_desc,
 
 void print_part_aml(struct blk_desc * dev_desc)
 {
-	disk_partition_t info;
+	struct disk_partition info;
 	int i;
 	if (_get_partition_info_aml(dev_desc,0,&info,0) == -1) {
 		printf("** No boot partition found on device %d **\n",dev_desc->devnum);

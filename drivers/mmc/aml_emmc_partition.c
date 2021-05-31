@@ -1193,7 +1193,7 @@ int fill_ept_by_gpt(struct mmc *mmc, struct _iptbl *p_iptbl_ept)
 	return 0;
 }
 
-void trans_ept_to_diskpart(struct _iptbl *ept, disk_partition_t *disk_part) {
+void trans_ept_to_diskpart(struct _iptbl *ept, struct disk_partition *disk_part) {
 	struct partitions *part = ept->partitions;
 	int count = ept->count;
 	int i;
@@ -1375,10 +1375,10 @@ int mmc_device_init (struct mmc *mmc)
 #ifdef CONFIG_AML_GPT
 	char *str_disk_guid;
 	int gpt_priority = GPT_PRIORITY;
-	disk_partition_t *disk_partition;
+	struct disk_partition *disk_partition;
 	int dcount = p_iptbl_ept->count;
 	struct blk_desc *dev_desc = mmc_get_blk_desc(mmc);
-	disk_partition = calloc(1, PAD_TO_BLOCKSIZE(sizeof(disk_partition_t) * dcount, dev_desc));
+	disk_partition = calloc(1, PAD_TO_BLOCKSIZE(sizeof(struct disk_partition) * dcount, dev_desc));
 	trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
 	str_disk_guid = malloc(UUID_STR_LEN + 1);
 	if (str_disk_guid == NULL) {
@@ -1406,7 +1406,7 @@ int mmc_device_init (struct mmc *mmc)
 		fill_ept_by_gpt(mmc, p_iptbl_ept);
 		free(disk_partition);
 		dcount = p_iptbl_ept->count;
-		disk_partition = calloc(1, PAD_TO_BLOCKSIZE(sizeof(disk_partition_t) * dcount, dev_desc));
+		disk_partition = calloc(1, PAD_TO_BLOCKSIZE(sizeof(struct disk_partition) * dcount, dev_desc));
 		trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
 		ret = gpt_restore(mmc_get_blk_desc(mmc), str_disk_guid, disk_partition, p_iptbl_ept->count);
 		if (broken_status == 1)
@@ -1511,7 +1511,7 @@ static inline char * get_part_name(struct partitions *part, int num)
 }
 
 int get_part_info_from_tbl(struct blk_desc *dev_desc,
-	int num, disk_partition_t *info)
+	int num, struct disk_partition *info)
 {
     int ret = 0;
     struct partitions *part;
@@ -1531,7 +1531,7 @@ int get_part_info_from_tbl(struct blk_desc *dev_desc,
     return ret;
 }
 #if (CONFIG_MPT_DEBUG)
-void show_partition_info(disk_partition_t *info)
+void show_partition_info(struct disk_partition *info)
 {
 	printf("----------%s----------\n", __func__);
 	printf("name %10s\n", info->name);
@@ -1575,7 +1575,7 @@ struct virtual_partition *aml_get_virtual_partition_by_name(const char *name)
 }
 
 int get_part_info_by_name(struct blk_desc *dev_desc,
-	const char *name, disk_partition_t *info)
+	const char *name, struct disk_partition *info)
 {
 	struct partitions *partition = NULL;
 	struct partitions virtual;
