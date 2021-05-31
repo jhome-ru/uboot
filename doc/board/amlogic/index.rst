@@ -101,3 +101,4 @@ Board Documentation
    u200
    wetek-core2
    w400
+   jethubj80
