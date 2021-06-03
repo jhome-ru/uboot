@@ -12,8 +12,4 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "gxl_jethubj80_v1"
 
-config DTB_BIND_KERNEL
-    bool "load dtb from boot part but not flash rsv"
-    default n
-
 endif

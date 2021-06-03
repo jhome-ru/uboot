@@ -8,7 +8,8 @@
 #define __MESON64_CONFIG_H
 
 #define CPU_ID_REG              P_AO_SEC_SD_CFG8
-#define PACKAGE_ID_MASK         0xFF
+#define PACKAGE_ID_MASK		0xFF
+#define CONFIG_MULTI_DTB	1
 
 /* Generic Interrupt Controller Definitions */
 #if (defined(CONFIG_MESON_AXG) || defined(CONFIG_MESON_G12A))
