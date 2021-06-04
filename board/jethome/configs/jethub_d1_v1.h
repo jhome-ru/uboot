@@ -623,7 +623,7 @@
 //#undef CONFIG_AML_NAND
 
 //unify build for generate encrypted bootloader "u-boot.bin.encrypt"
-#define CONFIG_AML_CRYPTO_UBOOT   1
+#define CONFIG_AML_CRYPTO_UBOOT   0
 
 //unify build for generate encrypted kernel image
 //SRC : "board/amlogic/axg_s400_v1/boot.img"
