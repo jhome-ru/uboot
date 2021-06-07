@@ -320,5 +320,5 @@ config DTB_BIND_KERNEL
 
 #source "board/amlogic/axg_jethubj100_v1/Kconfig"
 
-source "board/amlogic/gxl_jethubj80_v1/Kconfig"
+#source "board/amlogic/gxl_jethubj80_v1/Kconfig"
 
