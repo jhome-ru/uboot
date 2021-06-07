@@ -36,8 +36,8 @@ DECLARE_GLOBAL_DATA_PTR;
 	#define CONFIG_CMP_PARTMASK	(1)
 #endif
 /* debug info*/
-#define CONFIG_MPT_DEBUG 	(1)
-#define GPT_PRIORITY             (0)
+#define CONFIG_MPT_DEBUG 	(0)
+#define GPT_PRIORITY             (1)
 
 #define apt_err(fmt, ...) printf( "%s()-%d: " fmt , \
                   __func__, __LINE__, ##__VA_ARGS__)
@@ -1040,9 +1040,6 @@ int is_gpt_changed(struct mmc *mmc, struct _iptbl *p_iptbl_ept)
 	int gpt_changed = 0;
 	struct blk_desc *dev_desc = mmc_get_blk_desc(mmc);
 	ALLOC_CACHE_ALIGN_BUFFER_PAD(gpt_header, gpt_head, 1, dev_desc->blksz);
-	// !!! AML
-	apt_info("!!! AML ept partition table\n");
-	_dump_part_tbl(p_iptbl_ept->partitions, p_iptbl_ept->count);
 
 	if (!dev_desc) {
 		printf("%s: Invalid Argument(s)\n", __func__);
@@ -1058,18 +1055,8 @@ int is_gpt_changed(struct mmc *mmc, struct _iptbl *p_iptbl_ept)
 					__func__);
 			return 1;
 		} else {
-			printf("%s: *** Using Backup GPT from lab 0x%X ***\n",
-					__func__, dev_desc->lba - 1); // !! AML
-		}
-	}
-	apt_info("!! AML gpt partition table\n");
-	{
-		int i = 0;
-		apt_info("count %d\n", gpt_head->num_partition_entries);
-		while (i < gpt_head->num_partition_entries) {
-			printf("%02d %10ls %016llx %016llx\n", i, gpt_pte[i].partition_name, gpt_pte[i].starting_lba, gpt_pte[i].ending_lba);
-			i++;
-			if (gpt_pte[i].starting_lba==0) break;
+			printf("%s: *** Using Backup GPT from lba 0x%X ***\n",
+					__func__, dev_desc->lba - 1); 
 		}
 	}
 
@@ -1221,6 +1208,7 @@ void trans_ept_to_diskpart(struct _iptbl *ept, struct disk_partition *disk_part)
 	#ifdef CONFIG_RANDOM_UUID
 		gen_rand_uuid_str(disk_part[i].uuid, UUID_STR_FORMAT_STD);
 	#endif
+	
 		disk_part[i].bootable = 0;
 		if ( i == (count - 1))
 			disk_part[i].size = 0;
@@ -1386,7 +1374,6 @@ int mmc_device_init (struct mmc *mmc)
 	int dcount = p_iptbl_ept->count;
 	struct blk_desc *dev_desc = mmc_get_blk_desc(mmc);
 	disk_partition = calloc(1, PAD_TO_BLOCKSIZE(sizeof(struct disk_partition) * dcount, dev_desc));
-	apt_info("!!! AML after dtb&rsv before transfer ept_to_diskpart\n");
 	trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
 	str_disk_guid = malloc(UUID_STR_LEN + 1);
 	if (str_disk_guid == NULL) {
@@ -1396,7 +1383,6 @@ int mmc_device_init (struct mmc *mmc)
 #ifdef CONFIG_RANDOM_UUID
 	gen_rand_uuid_str(str_disk_guid, UUID_STR_FORMAT_STD);
 #endif
-	apt_wrn("!!! AML check legacy mbr %i\n", part_test_efi(mmc_get_blk_desc(mmc)));
 	if (part_test_efi(mmc_get_blk_desc(mmc)) != 0) {
 		ret = gpt_restore(mmc_get_blk_desc(mmc), str_disk_guid, disk_partition, dcount);
 		printf("GPT IS RESTORED %s\n", ret ? "Failed!" : "OK!");
@@ -1430,16 +1416,13 @@ int mmc_device_init (struct mmc *mmc)
 	free(disk_partition);
 #endif
 	/* init part again */
-	apt_wrn("!!! AML exec part_init\n");
 	part_init(mmc_get_blk_desc(mmc));
-	apt_wrn("!!! AML exec part_init end !!!!\n");
 
 _out:
 #ifdef CONFIG_AML_PARTITION
 	if (p_iptbl_rsv)
 		_free_iptbl(p_iptbl_rsv);
 #endif
-	printf("!!! AML mmc_device_init end with code %i\n",ret);
 	return ret;
 }
 

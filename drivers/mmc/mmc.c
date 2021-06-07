@@ -3044,7 +3044,6 @@ int mmc_pattern_check(struct mmc *mmc, struct aml_pattern *table)
 	struct virtual_partition *vpart = NULL;
 
 	vpart = aml_get_virtual_partition_by_name(table->name);
-	printf("!!! AML mmc_pattern_check: %s %s\n",table->name, vpart->name);
 
 	addr = (void *)malloc(vpart->size);
 	if (!addr) {
@@ -3107,7 +3106,6 @@ int mmc_init(struct mmc *mmc)
 				for (i = 0; i < ARRAY_SIZE(aml_pattern_table); i++) {
 					int j;
 					j = mmc_pattern_check(mmc, &aml_pattern_table[i]);
-					printf("!!! AML mmc_init: mmc_pattern_check %i\n",j);
 
 				}
 			}

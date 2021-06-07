@@ -320,7 +320,6 @@ int part_test_efi(struct blk_desc *dev_desc)
 	ALLOC_CACHE_ALIGN_BUFFER_PAD(legacy_mbr, legacymbr, 1, dev_desc->blksz);
 
 	/* Read legacy MBR from block 0 and validate it */
-	printf("!!! AML part_test_efi: lkb_dread:%i is_pmbr: %i\n", blk_dread(dev_desc, 0, 1, (ulong *)legacymbr), is_pmbr_valid(legacymbr));
 	if ((blk_dread(dev_desc, 0, 1, (ulong *)legacymbr) != 1)
 		|| (is_pmbr_valid(legacymbr) != 1)) {
 		return -1;
@@ -510,7 +509,6 @@ int gpt_fill_pte(struct blk_desc *dev_desc,
 #if CONFIG_IS_ENABLED(PARTITION_UUIDS)
 		str_uuid = partitions[i].uuid;
 		bin_uuid = gpt_e[i].unique_partition_guid.b;
-
 		if (uuid_str_to_bin(str_uuid, bin_uuid, UUID_STR_FORMAT_GUID)) {
 			printf("Partition no. %d: invalid guid: %s\n",
 				i, str_uuid);
@@ -537,7 +535,6 @@ int gpt_fill_pte(struct blk_desc *dev_desc,
 
 		memset(gpt_e[i].partition_name, 0,
 		       sizeof(gpt_e[i].partition_name));
-		printf("!! AML efiname:%i dosname:%i %i\n",efiname_len, dosname_len,sizeof(efi_char16_t));
 		for (k = 0; k < min(dosname_len, efiname_len); k++)
 			gpt_e[i].partition_name[k] =
 				(efi_char16_t)(partitions[i].name[k]);
@@ -545,10 +542,6 @@ int gpt_fill_pte(struct blk_desc *dev_desc,
 		debug("%s: name: %s offset[%d]: 0x" LBAF
 		      " size[%d]: 0x" LBAF "\n",
 		      __func__, partitions[i].name, i,
-		      offset, i, size);
-		printf("!!! AML %s: name: %s (%ls) offset[%d]: 0x" LBAF
-		      " size[%d]: 0x" LBAF "\n",
-		      __func__, partitions[i].name, gpt_e[i].partition_name, i,
 		      offset, i, size);
 	}
 
@@ -632,17 +625,6 @@ int gpt_restore(struct blk_desc *dev_desc, char *str_disk_guid,
 	gpt_header *gpt_h;
 	gpt_entry *gpt_e;
 	int ret, size;
-	// !! AML
-	printf("!! AML ept partition table for restore in gpt_restore\n");
-	{
-		int i = 0;
-		printf("!! AML count %d\n", parts_count);
-		while (i < parts_count) {
-			printf("%02d %s start:%016llx size:%016llx\n", i, partitions[i].name, partitions[i].start, partitions[i].size);
-			i++;
-		}
-	}
-
 	size = PAD_TO_BLOCKSIZE(sizeof(gpt_header), dev_desc);
 	gpt_h = malloc_cache_aligned(size);
 	if (gpt_h == NULL) {
@@ -669,17 +651,6 @@ int gpt_restore(struct blk_desc *dev_desc, char *str_disk_guid,
 	ret = gpt_fill_pte(dev_desc, gpt_h, gpt_e, partitions, parts_count);
 	if (ret)
 		goto err;
-	// !! AML
-	printf("!! AML gpt partition table for restore write in gpt_restore\n");
-	{
-		int i = 0;
-		printf("count %d\n", gpt_h->num_partition_entries);
-		while (i < gpt_h->num_partition_entries) {
-			printf("%02d %ls start:%016llx end:%016llx\n", i, gpt_e[i].partition_name, gpt_e[i].starting_lba, gpt_e[i].ending_lba);
-			i++;
-			if (gpt_e[i].starting_lba==0) break;
-		}
-	}
 
 	/* Write GPT partition table */
 	ret = write_gpt_table(dev_desc, gpt_h, gpt_e);
