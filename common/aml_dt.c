@@ -4,7 +4,9 @@
 #include <image.h>
 #include <malloc.h>
 #include <asm/arch/io.h>
+#include <asm/io.h>
 #include <asm/arch/secure_apb.h>
+#include <gzip.h>
 
 //#define AML_DT_DEBUG
 #ifdef AML_DT_DEBUG

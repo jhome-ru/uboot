@@ -25,6 +25,8 @@
 #include <linux/list.h>
 #include <div64.h>
 #include "mmc_private.h"
+#include <u-boot/crc.h>
+#include <rand.h>
 
 #include <emmc_partitions.h>
 #include <partition_table.h>

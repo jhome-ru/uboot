@@ -22,6 +22,11 @@
 #include <amlogic/cpu_id.h>
 #include <part_efi.h>
 
+extern int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
+		gpt_header *pgpt_head, gpt_entry **pgpt_pte);
+extern int part_test_efi(struct blk_desc *dev_desc);
+extern int is_pte_valid(gpt_entry * pte);
+
 
 DECLARE_GLOBAL_DATA_PTR;
 /* using mbr*/
@@ -1055,7 +1060,7 @@ int is_gpt_changed(struct mmc *mmc, struct _iptbl *p_iptbl_ept)
 					__func__);
 			return 1;
 		} else {
-			printf("%s: *** Using Backup GPT from lba 0x%X ***\n",
+			printf("%s: *** Using Backup GPT from lba 0x%lX ***\n",
 					__func__, dev_desc->lba - 1); 
 		}
 	}

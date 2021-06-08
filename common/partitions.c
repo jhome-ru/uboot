@@ -60,21 +60,7 @@ int check_valid_dts(unsigned char *buffer)
 {
 	int ret = -__LINE__;
 	char *dt_addr;
-	/* fixme, a work around way */
-	unsigned char *sbuffer = (unsigned char *)env_get_hex("loadaddr", 0x1000000 + 0x100000);
-	/* g12a merge to trunk, use trunk code */
-	//unsigned char *sbuffer = (unsigned char *)0x1000000;
 
-	if (IS_FEAT_BOOT_VERIFY()) {
-		memcpy(sbuffer, buffer, AML_DTB_IMG_MAX_SZ);
-		flush_cache((unsigned long)sbuffer, AML_DTB_IMG_MAX_SZ);
-		ret = aml_sec_boot_check(AML_D_P_IMG_DECRYPT, (long unsigned)sbuffer, AML_DTB_IMG_MAX_SZ, 0);
-		if (ret) {
-			printf("\n %s() %d: Decrypt dtb: Sig Check %d\n", __func__, __LINE__, ret);
-			return -__LINE__;
-		}
-		memcpy(buffer, sbuffer, AML_DTB_IMG_MAX_SZ);
-	}
 #ifdef CONFIG_MULTI_DTB
 	dt_addr = (char *)get_multi_dt_entry((unsigned long)buffer);
 #else

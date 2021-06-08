@@ -22,6 +22,7 @@
 #include <amlogic/cpu_id.h>
 #include <asm/arch/secure_apb.h>
 #include <asm/arch/io.h>
+#include <asm/io.h>
 
 /**
  * TODO: This should be moved to a RO region of registers or SRAM that
